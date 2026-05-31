@@ -19,19 +19,25 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-import os
-
-# Get frontend origins from environment or default to local for development
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+# Get frontend origins from settings or environment
 origins = [
-    FRONTEND_URL,
     "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
+
+frontend_env = settings.FRONTEND_URL
+if frontend_env:
+    for url in frontend_env.split(","):
+        clean_url = url.strip()
+        if clean_url and clean_url not in origins:
+            origins.append(clean_url)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex="https://.*\\.vercel\\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
