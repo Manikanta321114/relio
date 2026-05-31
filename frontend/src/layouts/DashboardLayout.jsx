@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Sidebar } from "../components/navigation/Sidebar";
 import { Navbar } from "../components/navigation/Navbar";
 import { MobileNav } from "../components/navigation/MobileNav";
+import { MobileDrawer } from "../components/navigation/MobileDrawer";
+import { AnimatePresence } from "framer-motion";
 
 export const DashboardLayout = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -28,15 +30,10 @@ export const DashboardLayout = ({ children }) => {
         <MobileNav />
       </div>
 
-      {/* Mobile Drawer Overlay (if we want a side drawer in mobile later) */}
-      {isMobileMenuOpen && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          {/* We can add a mobile sidebar drawer here if needed, but we have bottom nav */}
-        </div>
-      )}
+      {/* Mobile Sidebar Drawer */}
+      <AnimatePresence>
+        <MobileDrawer isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+      </AnimatePresence>
     </div>
   );
 };
