@@ -83,7 +83,8 @@ async def debug_endpoint():
         "ping_result": ping_result,
         "error_message": error_message,
         "database_name": settings.DATABASE_NAME,
-        "has_mongo_url_env": bool(settings.MONGODB_URL)
+        "has_mongo_url_env": bool(settings.MONGODB_URL),
+        "version_tag": "468352f"
     }
 
 @app.get("/")
