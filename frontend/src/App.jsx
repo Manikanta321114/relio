@@ -2,7 +2,6 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { ProtectedRoute, PublicRoute, AdminRoute } from "./routes/RouteGuards";
 import { GlobalLoader } from "./components/ui/GlobalLoader";
@@ -37,7 +36,6 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
-          <ThemeProvider>
             <WishlistProvider>
               <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: '#111827', color: '#fff', borderRadius: '12px' } }} />
               <Suspense fallback={<GlobalLoader />}>
@@ -81,7 +79,6 @@ export default function App() {
                 </Routes>
               </Suspense>
             </WishlistProvider>
-          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

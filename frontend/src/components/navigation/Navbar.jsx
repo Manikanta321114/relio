@@ -1,7 +1,6 @@
-import { Search, Bell, Moon, Sun, Menu, User, Package, CheckCircle, Heart } from "lucide-react";
+import { Search, Bell, Menu, User, Package, CheckCircle, Heart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useWishlist } from "../../context/WishlistContext";
-import { useTheme } from "../../context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -9,8 +8,6 @@ import { Link } from "react-router-dom";
 export const Navbar = ({ toggleMobileMenu }) => {
   const { user, logout } = useAuth();
   const { wishlistCount } = useWishlist();
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -57,22 +54,6 @@ export const Navbar = ({ toggleMobileMenu }) => {
       </div>
 
       <div className="flex items-center space-x-2 md:space-x-4">
-        <button 
-          onClick={toggleTheme} 
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors hidden sm:block focus:outline-none"
-          aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          <motion.div
-            initial={{ scale: 0.8, rotate: -30 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0.8, rotate: 30 }}
-            transition={{ type: "spring", stiffness: 200, damping: 12 }}
-            key={theme}
-          >
-            {isDark ? <Sun size={20} className="text-yellow-500 fill-yellow-500 animate-pulse" /> : <Moon size={20} className="text-gray-600 fill-gray-600" />}
-          </motion.div>
-        </button>
-
         {/* Wishlist Badge */}
         {user && (
           <Link 
