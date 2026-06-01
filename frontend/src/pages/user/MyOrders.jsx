@@ -93,7 +93,7 @@ export const MyOrders = () => {
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">No orders found</h3>
           <p className="text-gray-500 mb-6">Looks like you haven't bought anything yet.</p>
-          <Button variant="primary" onClick={() => window.location.href='/marketplace'}>Start Shopping</Button>
+          <Button variant="primary" onClick={() => window.location.href='/'}>Start Shopping</Button>
         </div>
       ) : (
         <div className="space-y-6">

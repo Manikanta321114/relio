@@ -48,7 +48,7 @@ export const WishlistPage = () => {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       {/* Back Button */}
       <button 
-        onClick={() => navigate("/marketplace")} 
+        onClick={() => navigate("/")} 
         className="flex items-center text-gray-500 hover:text-primary mb-6 transition-colors font-medium"
       >
         <ArrowLeft size={18} className="mr-2" /> Back to Marketplace
@@ -93,7 +93,7 @@ export const WishlistPage = () => {
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
           <p className="text-gray-500 mb-6 max-w-sm mx-auto">Explore pre-loved academic, competitive, and novel listings and tap the heart icon to save them here.</p>
-          <Button variant="primary" onClick={() => navigate("/marketplace")} className="px-6 py-2.5 font-bold shadow-lg shadow-primary/20">
+          <Button variant="primary" onClick={() => navigate("/")} className="px-6 py-2.5 font-bold shadow-lg shadow-primary/20">
             Browse Marketplace
           </Button>
         </motion.div>

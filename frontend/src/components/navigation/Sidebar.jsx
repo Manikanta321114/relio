@@ -7,7 +7,7 @@ import clsx from "clsx";
 
 const navItems = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Marketplace", path: "/marketplace", icon: ShoppingBag },
+  { name: "Marketplace", path: "/", icon: ShoppingBag },
   { name: "Sell Book", path: "/sell-book", icon: PlusCircle },
   { name: "My Uploads", path: "/my-uploads", icon: BookOpen },
   { name: "My Orders", path: "/my-orders", icon: ShoppingBag },

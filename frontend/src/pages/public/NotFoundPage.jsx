@@ -26,7 +26,7 @@ export const NotFoundPage = () => {
           The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
         </p>
         
-        <Link to="/marketplace">
+        <Link to="/">
           <Button variant="primary" className="px-8 py-4 shadow-xl shadow-primary/20 hover:scale-105 transition-transform duration-300">
             <ArrowLeft className="mr-2 h-5 w-5 inline" />
             Back to Marketplace

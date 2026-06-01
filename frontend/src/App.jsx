@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import { WishlistProvider } from "./context/WishlistContext";
@@ -47,8 +47,8 @@ export default function App() {
                   </Route>
 
                   {/* General Routes */}
-                  <Route path="/" element={<DashboardLayout><div className="p-10 text-center">Landing Page (Coming Soon)</div></DashboardLayout>} />
-                  <Route path="/marketplace" element={<DashboardLayout><MarketplacePage /></DashboardLayout>} />
+                  <Route path="/" element={<DashboardLayout><MarketplacePage /></DashboardLayout>} />
+                  <Route path="/marketplace" element={<Navigate to="/" replace />} />
                   <Route path="/books/:id" element={<DashboardLayout><BookDetailsPage /></DashboardLayout>} />
 
                   {/* Protected User Routes */}

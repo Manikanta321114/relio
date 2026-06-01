@@ -68,7 +68,7 @@ export const CheckoutPage = () => {
       setBook(data);
     } catch (error) {
       toast.error("Failed to load book details");
-      navigate("/marketplace");
+      navigate("/");
     } finally {
       setIsLoading(false);
     }
@@ -387,7 +387,7 @@ export const CheckoutPage = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full">
-                <Button variant="outline" className="flex-1 py-4" onClick={() => navigate("/marketplace")}>
+                <Button variant="outline" className="flex-1 py-4" onClick={() => navigate("/")}>
                   Continue Shopping
                 </Button>
                 <Button variant="primary" className="flex-1 py-4 shadow-xl shadow-primary/20" onClick={() => navigate("/my-orders")}>

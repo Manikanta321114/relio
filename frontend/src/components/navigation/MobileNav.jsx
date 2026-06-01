@@ -7,7 +7,7 @@ export const MobileNav = () => {
 
   const mobileItems = [
     { name: "Home", path: "/dashboard", icon: LayoutDashboard },
-    { name: "Market", path: "/marketplace", icon: ShoppingBag },
+    { name: "Market", path: "/", icon: ShoppingBag },
     { name: "Sell", path: "/sell-book", icon: PlusCircle, isMain: true },
     { name: "Alerts", path: "/notifications", icon: Bell },
     { name: "Profile", path: "/settings", icon: User },

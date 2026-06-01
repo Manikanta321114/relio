@@ -51,7 +51,7 @@ export const BookDetailsPage = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to load book details");
-      navigate("/marketplace");
+      navigate("/");
     } finally {
       setIsLoading(false);
     }
