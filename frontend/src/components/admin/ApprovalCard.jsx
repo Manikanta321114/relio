@@ -52,23 +52,13 @@ export const ApprovalCard = ({ book, onApprove, onReject, onViewDetails, isProce
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-gray-50">
+        <div className="mt-4 pt-4 border-t border-gray-50">
           <Button 
-            variant="outline" 
-            size="sm" 
             disabled={isProcessing}
-            onClick={() => onReject(book.id)}
-            className="text-red-600 border-red-100 hover:bg-red-50 hover:border-red-200 focus:ring-red-500 w-full px-0"
+            onClick={() => onViewDetails(book)}
+            className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-xl shadow-sm"
           >
-            <XCircle size={16} className="mr-1.5" /> Reject
-          </Button>
-          <Button 
-            size="sm" 
-            disabled={isProcessing}
-            onClick={() => onApprove(book.id)}
-            className="bg-green-600 hover:bg-green-700 focus:ring-green-500 w-full px-0"
-          >
-            <CheckCircle size={16} className="mr-1.5" /> Approve
+            Review Book
           </Button>
         </div>
       </div>

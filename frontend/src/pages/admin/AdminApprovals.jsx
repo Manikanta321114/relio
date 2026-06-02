@@ -31,11 +31,11 @@ export const AdminApprovals = () => {
     }
   };
 
-  const handleApprove = async (id, adminPrice = null, adjustmentReason = "None", negotiable = false) => {
+  const handleApprove = async (id, adminPrice = null, adjustmentReason = "None", negotiable = false, adminMessage = "") => {
     try {
       setIsProcessing(true);
       const priceToApprove = adminPrice !== null ? adminPrice : books.find(b => b.id === id)?.price;
-      await adminService.approveBook(id, priceToApprove, adjustmentReason, negotiable);
+      await adminService.approveBook(id, priceToApprove, adjustmentReason, negotiable, adminMessage);
       setBooks(prev => prev.filter(b => b.id !== id));
       toast.success("Book approved successfully!");
       if (selectedBook?.id === id) setSelectedBook(null);
@@ -46,12 +46,10 @@ export const AdminApprovals = () => {
     }
   };
 
-  const handleReject = async (id) => {
-    if (!window.confirm("Are you sure you want to reject this listing?")) return;
-    
+  const handleReject = async (id, rejectionReason = "Images are not clear") => {
     try {
       setIsProcessing(true);
-      await adminService.rejectBook(id);
+      await adminService.rejectBook(id, rejectionReason);
       setBooks(prev => prev.filter(b => b.id !== id));
       toast.success("Book rejected.");
       if (selectedBook?.id === id) setSelectedBook(null);

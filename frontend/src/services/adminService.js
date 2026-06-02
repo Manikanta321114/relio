@@ -11,17 +11,20 @@ export const adminService = {
     return response.data;
   },
   
-  approveBook: async (id, adminPrice, adjustmentReason = null, negotiable = false) => {
+  approveBook: async (id, adminPrice, adjustmentReason = null, negotiable = false, adminMessage = "") => {
     const response = await api.put(`/admin/books/${id}/approve`, { 
       admin_price: adminPrice,
       adjustment_reason: adjustmentReason,
-      negotiable: negotiable
+      negotiable: negotiable,
+      admin_message: adminMessage
     });
     return response.data;
   },
   
-  rejectBook: async (id) => {
-    const response = await api.put(`/admin/books/${id}/reject`);
+  rejectBook: async (id, rejectionReason = "Images are not clear") => {
+    const response = await api.put(`/admin/books/${id}/reject`, {
+      rejection_reason: rejectionReason
+    });
     return response.data;
   },
   

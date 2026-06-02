@@ -66,6 +66,8 @@ async def approve_book(id: str, payload: dict, admin: UserModel = Depends(requir
     admin_price = payload.get("admin_price")
     adjustment_reason = payload.get("adjustment_reason", "None")
     negotiable = bool(payload.get("negotiable", False))
+    admin_message = payload.get("admin_message", "")
+    
     if admin_price is None:
         raise HTTPException(status_code=400, detail="Admin approved price required")
         
@@ -83,6 +85,7 @@ async def approve_book(id: str, payload: dict, admin: UserModel = Depends(requir
             "admin_price": float(admin_price),
             "price": float(admin_price),
             "negotiable": negotiable,
+            "admin_message": admin_message,
             "approval_date": datetime.now(timezone.utc),
             "adjustment_reason": adjustment_reason,
             "last_updated_by": str(admin.id),
@@ -92,16 +95,45 @@ async def approve_book(id: str, payload: dict, admin: UserModel = Depends(requir
     )
     if result.modified_count == 0:
         raise HTTPException(status_code=400, detail="Book already approved or failed to update")
+        
+    # Notify Seller
+    seller_notif = NotificationModel(
+        user_id=ObjectId(book["seller_id"]),
+        title="Book Approved",
+        message=f"Congratulations! Your book {book.get('title')} has been approved."
+    )
+    await db.db.notifications.insert_one(seller_notif.model_dump(by_alias=True, exclude_none=True))
+    
     return {"message": "Book approved successfully"}
 
 @router.put("/books/{id}/reject")
-async def reject_book(id: str, admin: UserModel = Depends(require_admin)):
+async def reject_book(id: str, payload: dict = None, admin: UserModel = Depends(require_admin)):
+    payload = payload or {}
+    rejection_reason = payload.get("rejection_reason", "Images are not clear")
+    
+    book = await db.db.books.find_one({"_id": ObjectId(id)})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+        
     result = await db.db.books.update_one(
         {"_id": ObjectId(id)},
-        {"$set": {"status": "rejected", "updated_at": datetime.now(timezone.utc)}}
+        {"$set": {
+            "status": "rejected",
+            "rejection_reason": rejection_reason,
+            "updated_at": datetime.now(timezone.utc)
+        }}
     )
     if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=404, detail="Book already rejected or failed to update")
+        
+    # Notify Seller
+    seller_notif = NotificationModel(
+        user_id=ObjectId(book["seller_id"]),
+        title="Book Rejected",
+        message=f"Your book {book.get('title')} was rejected. Reason: {rejection_reason}."
+    )
+    await db.db.notifications.insert_one(seller_notif.model_dump(by_alias=True, exclude_none=True))
+    
     return {"message": "Book rejected successfully"}
 
 @router.get("/orders", response_model=List[dict])
