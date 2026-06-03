@@ -24,6 +24,7 @@ const MarketplacePage = lazy(() => import("./pages/public/MarketplacePage").then
 const BookDetailsPage = lazy(() => import("./pages/public/BookDetailsPage").then(m => ({ default: m.BookDetailsPage })));
 const CheckoutPage = lazy(() => import("./pages/public/CheckoutPage").then(m => ({ default: m.CheckoutPage })));
 const Settings = lazy(() => import("./pages/user/Settings").then(m => ({ default: m.Settings })));
+const PrintDelivery = lazy(() => import("./pages/user/PrintDelivery").then(m => ({ default: m.PrintDelivery })));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const AdminApprovals = lazy(() => import("./pages/admin/AdminApprovals").then(m => ({ default: m.AdminApprovals })));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders").then(m => ({ default: m.AdminOrders })));
@@ -61,6 +62,7 @@ export default function App() {
                     <Route path="/wishlist" element={<DashboardLayout><WishlistPage /></DashboardLayout>} />
                     <Route path="/notifications" element={<DashboardLayout><Notifications /></DashboardLayout>} />
                     <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
+                    <Route path="/print-delivery" element={<DashboardLayout><PrintDelivery /></DashboardLayout>} />
                   </Route>
 
                   {/* Protected Admin Routes */}
