@@ -173,10 +173,13 @@ export const ReviewModal = ({ isOpen, onClose, book, onApprove, onReject, isProc
                       <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
                         <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Title</span> <span className="font-semibold text-gray-900">{book.title}</span></p>
                         <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Author</span> <span className="font-semibold text-gray-900">{book.author || "Unknown"}</span></p>
-                        <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Category</span> <span className="font-semibold text-gray-900">{book.category}</span></p>
+                        <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Category</span> <span className="font-semibold text-gray-900">{book.category}{book.subcategory ? ` / ${book.subcategory}` : ""}</span></p>
                         <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Condition</span> <span className="font-semibold text-orange-600">{book.condition}</span></p>
-                        <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Original Price</span> <span className="font-semibold text-gray-900">₹{(book.price * 1.3).toFixed(0)}</span></p>
+                        <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Original Price</span> <span className="font-semibold text-gray-900">{book.original_price ? `₹${book.original_price}` : `₹${(book.price * 1.3).toFixed(0)}`}</span></p>
                         <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Seller Expected</span> <span className="font-bold text-primary">₹{book.price}</span></p>
+                        {book.year_of_publication && (
+                          <p className="flex flex-col"><span className="text-xs text-gray-400 uppercase">Publication Year</span> <span className="font-semibold text-gray-900">{book.year_of_publication}</span></p>
+                        )}
                         <p className="flex flex-col col-span-2"><span className="text-xs text-gray-400 uppercase">Upload Date</span> <span className="font-semibold text-gray-900">{new Date(book.created_at).toLocaleString()}</span></p>
                       </div>
                     </div>

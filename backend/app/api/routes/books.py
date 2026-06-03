@@ -12,6 +12,7 @@ router = APIRouter()
 # The indexes are created during application startup or lazily
 async def create_books_indexes():
     await db.db.books.create_index([("category", pymongo.ASCENDING)])
+    await db.db.books.create_index([("subcategory", pymongo.ASCENDING)])
     await db.db.books.create_index([("status", pymongo.ASCENDING)])
     await db.db.books.create_index([("created_at", pymongo.DESCENDING)])
     await db.db.books.create_index([("seller_id", pymongo.ASCENDING)])
@@ -45,6 +46,7 @@ from typing import Optional
 async def get_books(
     search: Optional[str] = None,
     category: Optional[str] = None,
+    subcategory: Optional[str] = None,
     condition: Optional[str] = None,
     sort: Optional[str] = "newest",
     page: int = 1,
@@ -58,6 +60,10 @@ async def get_books(
     if category:
         import re
         query["category"] = {"$regex": f"^{re.escape(category)}$", "$options": "i"}
+        
+    if subcategory:
+        import re
+        query["subcategory"] = {"$regex": f"^{re.escape(subcategory)}$", "$options": "i"}
         
     if condition:
         import re

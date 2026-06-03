@@ -2,14 +2,58 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { X } from "lucide-react";
 
-const CATEGORIES = ["UPSC", "SSC", "GATE", "NEET", "JEE", "Novels", "Poetry", "Programming", "Self Help"];
+const CATEGORIES = {
+  "School Books": [
+    "Nursery & KG",
+    "Class 1-5",
+    "Class 6-8",
+    "Class 9-10",
+    "Class 11-12 Science",
+    "Class 11-12 Commerce",
+    "Class 11-12 Arts"
+  ],
+  "Competitive Exams": [
+    "JEE",
+    "NEET",
+    "KCET",
+    "COMEDK",
+    "UPSC",
+    "SSC",
+    "Banking",
+    "Railways",
+    "GATE",
+    "CAT"
+  ],
+  "Engineering": [
+    "Computer Science",
+    "Information Science",
+    "AI & DS",
+    "ECE",
+    "Electrical",
+    "Mechanical",
+    "Civil"
+  ],
+  "Medical": [],
+  "Commerce & Management": [],
+  "Programming & Skills": [],
+  "General Reading": [],
+  "Others": []
+};
 const CONDITIONS = ["Like New", "Good", "Average", "Old"];
 
 export const FilterSidebar = ({ filters, setFilters, onClose, isMobile }) => {
   const handleCategoryChange = (cat) => {
     setFilters(prev => ({
       ...prev,
-      category: prev.category === cat ? "" : cat
+      category: prev.category === cat ? "" : cat,
+      subcategory: ""
+    }));
+  };
+
+  const handleSubcategoryChange = (sub) => {
+    setFilters(prev => ({
+      ...prev,
+      subcategory: prev.subcategory === sub ? "" : sub
     }));
   };
 
@@ -21,7 +65,7 @@ export const FilterSidebar = ({ filters, setFilters, onClose, isMobile }) => {
   };
 
   const clearFilters = () => {
-    setFilters(prev => ({ ...prev, category: "", condition: "", sort: "newest" }));
+    setFilters(prev => ({ ...prev, category: "", subcategory: "", condition: "", sort: "newest" }));
   };
 
   const SidebarContent = (
@@ -39,20 +83,52 @@ export const FilterSidebar = ({ filters, setFilters, onClose, isMobile }) => {
         {/* Categories */}
         <div>
           <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Category</h4>
-          <div className="space-y-2">
-            {CATEGORIES.map(cat => (
-              <label key={cat} onClick={() => handleCategoryChange(cat)} className="flex items-center space-x-3 cursor-pointer group">
-                <div className={clsx(
-                  "w-5 h-5 rounded border flex items-center justify-center transition-colors",
-                  filters.category === cat ? "bg-primary border-primary" : "border-gray-300 group-hover:border-primary"
-                )}>
-                  {filters.category === cat && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2.5 h-2.5 bg-white rounded-sm" />}
+          <div className="space-y-3">
+            {Object.keys(CATEGORIES).map(cat => {
+              const isSelected = filters.category === cat;
+              const subcategories = CATEGORIES[cat];
+              
+              return (
+                <div key={cat} className="space-y-2">
+                  <label onClick={() => handleCategoryChange(cat)} className="flex items-center space-x-3 cursor-pointer group">
+                    <div className={clsx(
+                      "w-5 h-5 rounded border flex items-center justify-center transition-colors",
+                      isSelected ? "bg-primary border-primary" : "border-gray-300 group-hover:border-primary"
+                    )}>
+                      {isSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2.5 h-2.5 bg-white rounded-sm" />}
+                    </div>
+                    <span className={clsx("text-sm", isSelected ? "font-semibold text-primary" : "text-gray-600 group-hover:text-gray-900")}>
+                      {cat}
+                    </span>
+                  </label>
+                  
+                  {isSelected && subcategories && subcategories.length > 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="pl-8 pt-1 pb-2 space-y-2 border-l border-gray-100 ml-2.5"
+                    >
+                      {subcategories.map(sub => {
+                        const isSubSelected = filters.subcategory === sub;
+                        return (
+                          <label key={sub} onClick={() => handleSubcategoryChange(sub)} className="flex items-center space-x-3 cursor-pointer group py-0.5">
+                            <div className={clsx(
+                              "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                              isSubSelected ? "bg-primary border-primary" : "border-gray-300 group-hover:border-primary"
+                            )}>
+                              {isSubSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2 h-2 bg-white rounded-sm" />}
+                            </div>
+                            <span className={clsx("text-xs", isSubSelected ? "font-medium text-primary" : "text-gray-500 group-hover:text-gray-700")}>
+                              {sub}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </motion.div>
+                  )}
                 </div>
-                <span className={clsx("text-sm", filters.category === cat ? "font-medium text-primary" : "text-gray-600 group-hover:text-gray-900")}>
-                  {cat}
-                </span>
-              </label>
-            ))}
+              );
+            })}
           </div>
         </div>
 

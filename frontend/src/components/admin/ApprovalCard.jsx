@@ -46,6 +46,16 @@ export const ApprovalCard = ({ book, onApprove, onReject, onViewDetails, isProce
             <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
               {book.category}
             </span>
+            {book.subcategory && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                {book.subcategory}
+              </span>
+            )}
+            {book.year_of_publication && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                {book.year_of_publication}
+              </span>
+            )}
             <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
               {book.condition}
             </span>

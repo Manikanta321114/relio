@@ -16,7 +16,43 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentLocation } from "../../utils/location";
 
 const STEPS = ["Images", "Details", "Location", "Preview"];
-const CATEGORIES = ["UPSC", "SSC", "GATE", "NEET", "JEE", "Novels", "Poetry", "Programming", "Self Help"];
+const CATEGORIES = {
+  "School Books": [
+    "Nursery & KG",
+    "Class 1-5",
+    "Class 6-8",
+    "Class 9-10",
+    "Class 11-12 Science",
+    "Class 11-12 Commerce",
+    "Class 11-12 Arts"
+  ],
+  "Competitive Exams": [
+    "JEE",
+    "NEET",
+    "KCET",
+    "COMEDK",
+    "UPSC",
+    "SSC",
+    "Banking",
+    "Railways",
+    "GATE",
+    "CAT"
+  ],
+  "Engineering": [
+    "Computer Science",
+    "Information Science",
+    "AI & DS",
+    "ECE",
+    "Electrical",
+    "Mechanical",
+    "Civil"
+  ],
+  "Medical": [],
+  "Commerce & Management": [],
+  "Programming & Skills": [],
+  "General Reading": [],
+  "Others": []
+};
 
 export const SellBook = () => {
   const navigate = useNavigate();
@@ -33,8 +69,11 @@ export const SellBook = () => {
     images: { front: null, back: null },
     title: "",
     category: "",
-    condition: "",
+    subcategory: "",
+    originalPrice: "",
     price: "",
+    yearOfPublication: "",
+    condition: "",
     description: "",
     address: { state: "", city: "", area: "", pincode: "" }
   });
@@ -78,6 +117,20 @@ export const SellBook = () => {
         ...prev,
         address: { ...prev.address, [name]: value }
       }));
+    } else if (name === "category") {
+      setFormData(prev => ({
+        ...prev,
+        category: value,
+        subcategory: ""
+      }));
+    } else if (name === "originalPrice") {
+      const orig = Number(value) || 0;
+      const suggested = orig > 0 ? Math.round(orig * 0.4) : "";
+      setFormData(prev => ({
+        ...prev,
+        originalPrice: value,
+        price: suggested ? String(suggested) : prev.price
+      }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -91,7 +144,8 @@ export const SellBook = () => {
       }
     }
     if (currentStep === 2) {
-      if (!formData.title || !formData.category || !formData.condition || !formData.price || !formData.description) {
+      const hasSub = formData.category && CATEGORIES[formData.category] && CATEGORIES[formData.category].length > 0;
+      if (!formData.title || !formData.category || (hasSub && !formData.subcategory) || !formData.condition || !formData.price || !formData.originalPrice || !formData.yearOfPublication || !formData.description) {
         toast.error("Please fill all book details");
         return;
       }
@@ -138,8 +192,11 @@ export const SellBook = () => {
       const payload = {
         title: formData.title,
         category: formData.category,
-        condition: formData.condition,
+        subcategory: formData.subcategory || null,
+        original_price: formData.originalPrice ? Number(formData.originalPrice) : null,
         price: Number(formData.price),
+        year_of_publication: formData.yearOfPublication ? Number(formData.yearOfPublication) : null,
+        condition: formData.condition,
         description: formData.description,
         front_image: frontUpload.url,
         back_image: backUrl,
@@ -173,25 +230,67 @@ export const SellBook = () => {
             <UploadZone label="Back Cover Image (Optional)" id="back" currentFile={formData.images.back} onFileSelect={handleFileSelect} />
           </motion.div>
         );
-      case 2:
+      case 2: {
+        const hasSubcategories = formData.category && CATEGORIES[formData.category] && CATEGORIES[formData.category].length > 0;
+        const suggestedPrice = formData.originalPrice ? Math.round(Number(formData.originalPrice) * 0.4) : 0;
+        
         return (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
             <Input label="Book Title" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Atomic Habits" />
-            <div>
-              <label className="text-sm font-medium text-text/80 mb-2 block">Category</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none">
-                <option value="" disabled>Select Category</option>
-                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-              </select>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-text/80 mb-2 block">Category</label>
+                <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                  <option value="" disabled>Select Category</option>
+                  {Object.keys(CATEGORIES).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+              </div>
+
+              {hasSubcategories ? (
+                <div>
+                  <label className="text-sm font-medium text-text/80 mb-2 block">Subcategory</label>
+                  <select name="subcategory" value={formData.subcategory} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none">
+                    <option value="" disabled>Select Subcategory</option>
+                    {CATEGORIES[formData.category].map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                  </select>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-sm font-medium text-text/80 mb-2 block">Publication Year</label>
+                  <input type="number" name="yearOfPublication" value={formData.yearOfPublication} onChange={handleChange} placeholder="e.g. 2021" className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none" min="1900" max={new Date().getFullYear()} />
+                </div>
+              )}
             </div>
+
+            {hasSubcategories && (
+              <div>
+                <label className="text-sm font-medium text-text/80 mb-2 block">Publication Year</label>
+                <input type="number" name="yearOfPublication" value={formData.yearOfPublication} onChange={handleChange} placeholder="e.g. 2021" className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none" min="1900" max={new Date().getFullYear()} />
+              </div>
+            )}
+
             <ConditionSelector selected={formData.condition} onChange={(val) => setFormData(prev => ({ ...prev, condition: val }))} />
-            <PriceInput label="Expected Price" name="price" value={formData.price} onChange={handleChange} placeholder="0" />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Input label="Original Book Price (₹)" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="e.g. 1000" type="number" />
+                {suggestedPrice > 0 && (
+                  <p className="text-xs text-green-600 mt-1 font-medium">
+                    Suggested Selling Price: ₹{suggestedPrice} (60% less)
+                  </p>
+                )}
+              </div>
+              <PriceInput label="Expected Price (₹)" name="price" value={formData.price} onChange={handleChange} placeholder="0" />
+            </div>
+
             <div>
               <label className="text-sm font-medium text-text/80 mb-2 block">Description</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none resize-none" placeholder="Mention any specific details..." />
+              <textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 outline-none resize-none" placeholder="Describe book condition, notes, highlights, missing pages, extra materials." />
             </div>
           </motion.div>
         );
+      }
       case 3:
         return (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
@@ -235,10 +334,25 @@ export const SellBook = () => {
                 <div className="text-gray-500">Title</div>
                 <div className="font-medium text-gray-900 text-right">{formData.title}</div>
                 <div className="text-gray-500">Category</div>
-                <div className="font-medium text-gray-900 text-right">{formData.category}</div>
+                <div className="font-medium text-gray-900 text-right">
+                  {formData.category}
+                  {formData.subcategory ? ` (${formData.subcategory})` : ""}
+                </div>
+                {formData.yearOfPublication && (
+                  <>
+                    <div className="text-gray-500">Publication Year</div>
+                    <div className="font-medium text-gray-900 text-right">{formData.yearOfPublication}</div>
+                  </>
+                )}
+                {formData.originalPrice && (
+                  <>
+                    <div className="text-gray-500">Original Price</div>
+                    <div className="font-medium text-gray-900 text-right">₹{formData.originalPrice}</div>
+                  </>
+                )}
                 <div className="text-gray-500">Condition</div>
                 <div className="font-medium text-gray-900 text-right">{formData.condition}</div>
-                <div className="text-gray-500">Price</div>
+                <div className="text-gray-500">Expected Price</div>
                 <div className="font-medium text-green-600 text-right text-lg">₹{formData.price}</div>
               </div>
             </div>
@@ -256,7 +370,6 @@ export const SellBook = () => {
           title="Book Submitted Successfully!" 
           message="Your book has been submitted for admin approval 🚀. We will notify you once it's live."
         />
-        {/* Note: The SuccessState currently redirects to /dashboard. Let's update it to /my-uploads later or just here */}
       </div>
     );
   }

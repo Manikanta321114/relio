@@ -12,7 +12,9 @@ class BookModel(BaseModel):
     author: Optional[str] = "Unknown"
     description: str
     price: float
+    original_price: Optional[float] = None
     category: str
+    subcategory: Optional[str] = None
     condition: str
     front_image: str
     back_image: Optional[str] = None
@@ -22,6 +24,7 @@ class BookModel(BaseModel):
     approval_date: Optional[datetime] = None
     wishlist_count: int = 0
     share_count: int = 0
+    year_of_publication: Optional[int] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
@@ -36,12 +39,15 @@ class BookCreate(BaseModel):
     author: Optional[str] = "Unknown"
     description: str
     price: confloat(gt=0)
+    original_price: Optional[float] = None
     category: str
+    subcategory: Optional[str] = None
     condition: str
     front_image: str
     back_image: Optional[str] = None
     location: AddressModel
     negotiable: Optional[bool] = False
+    year_of_publication: Optional[int] = None
 
 class BookResponse(BaseModel):
     id: str
@@ -52,7 +58,9 @@ class BookResponse(BaseModel):
     price: float
     seller_price: Optional[float] = None
     admin_price: Optional[float] = None
+    original_price: Optional[float] = None
     category: str
+    subcategory: Optional[str] = None
     condition: str
     front_image: str
     back_image: Optional[str] = None
@@ -62,6 +70,7 @@ class BookResponse(BaseModel):
     approval_date: Optional[datetime] = None
     wishlist_count: Optional[int] = 0
     share_count: Optional[int] = 0
+    year_of_publication: Optional[int] = None
     created_at: datetime
     
     @classmethod
@@ -75,7 +84,9 @@ class BookResponse(BaseModel):
             price=book_doc["price"],
             seller_price=book_doc.get("seller_price", book_doc.get("price", 0.0)),
             admin_price=book_doc.get("admin_price"),
+            original_price=book_doc.get("original_price"),
             category=book_doc["category"],
+            subcategory=book_doc.get("subcategory"),
             condition=book_doc["condition"],
             front_image=book_doc["front_image"],
             back_image=book_doc.get("back_image"),
@@ -85,5 +96,6 @@ class BookResponse(BaseModel):
             approval_date=book_doc.get("approval_date"),
             wishlist_count=book_doc.get("wishlist_count", 0),
             share_count=book_doc.get("share_count", 0),
+            year_of_publication=book_doc.get("year_of_publication"),
             created_at=book_doc["created_at"]
         )

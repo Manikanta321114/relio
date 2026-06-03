@@ -200,7 +200,7 @@ export const BookDetailsPage = () => {
         <div className="w-full lg:w-1/2 flex flex-col pt-4">
           <div className="flex justify-between items-start mb-2">
             <span className="text-sm font-semibold text-primary uppercase tracking-wider bg-primary/10 px-3 py-1 rounded-full">
-              {book.category}
+              {book.category}{book.subcategory ? ` / ${book.subcategory}` : ''}
             </span>
             <div className="flex gap-2 text-gray-400">
               <button 
@@ -245,6 +245,15 @@ export const BookDetailsPage = () => {
           <div className="grid grid-cols-2 gap-4 mb-8 bg-gray-50 p-6 rounded-2xl border border-gray-100">
             <div className="flex flex-wrap gap-3">
               <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">{book.category}</span>
+              {book.subcategory && (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">{book.subcategory}</span>
+              )}
+              {book.year_of_publication && (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">Published: {book.year_of_publication}</span>
+              )}
+              {book.original_price && (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">Original: ₹{book.original_price}</span>
+              )}
               <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">{book.condition}</span>
               {book.status === 'sold' && (
                 <span className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-sm font-bold uppercase">Out of Stock</span>

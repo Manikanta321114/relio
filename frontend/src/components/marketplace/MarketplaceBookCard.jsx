@@ -77,6 +77,14 @@ export const MarketplaceBookCard = ({ book }) => {
           )}
         </div>
         
+        {(book.subcategory || book.year_of_publication) && (
+          <div className="flex items-center gap-2 mb-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+            {book.subcategory && <span>{book.subcategory}</span>}
+            {book.subcategory && book.year_of_publication && <span>•</span>}
+            {book.year_of_publication && <span>{book.year_of_publication}</span>}
+          </div>
+        )}
+        
         <p className="text-sm text-gray-500 mb-4 line-clamp-2">{book.description}</p>
         
         <div className="mt-auto">

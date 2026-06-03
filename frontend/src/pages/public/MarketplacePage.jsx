@@ -16,6 +16,7 @@ export const MarketplacePage = () => {
   const [filters, setFilters] = useState({
     search: "",
     category: "",
+    subcategory: "",
     condition: "",
     sort: "newest",
     page: 1,
@@ -36,7 +37,7 @@ export const MarketplacePage = () => {
   // Fetch data when filters change
   useEffect(() => {
     fetchBooks();
-  }, [filters.category, filters.condition, filters.sort, filters.page, filters.search]);
+  }, [filters.category, filters.subcategory, filters.condition, filters.sort, filters.page, filters.search]);
 
   const fetchBooks = async () => {
     try {
@@ -103,7 +104,7 @@ export const MarketplacePage = () => {
       {/* Premium Category Quick Filters */}
       <div className="mb-8 overflow-x-auto pb-3 -mx-4 px-4 md:mx-0 md:px-0 flex gap-3 scrollbar-thin scrollbar-thumb-gray-200">
         <button
-          onClick={() => setFilters(prev => ({ ...prev, category: "", page: 1 }))}
+          onClick={() => setFilters(prev => ({ ...prev, category: "", subcategory: "", page: 1 }))}
           className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
             filters.category === ""
               ? "bg-primary text-white border-primary"
@@ -112,10 +113,10 @@ export const MarketplacePage = () => {
         >
           All Books
         </button>
-        {["UPSC", "SSC", "JEE", "GATE", "Programming", "Engineering", "Novels"].map((cat) => (
+        {["School Books", "Competitive Exams", "Engineering", "Medical", "Commerce & Management", "Programming & Skills", "General Reading", "Others"].map((cat) => (
           <button
             key={cat}
-            onClick={() => setFilters(prev => ({ ...prev, category: cat, page: 1 }))}
+            onClick={() => setFilters(prev => ({ ...prev, category: cat, subcategory: "", page: 1 }))}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
               filters.category.toLowerCase() === cat.toLowerCase()
                 ? "bg-primary text-white border-primary"
@@ -163,7 +164,7 @@ export const MarketplacePage = () => {
               {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <SkeletonBookCard key={i} />)}
             </div>
           ) : books.length === 0 ? (
-            <EmptyMarketplaceState onReset={() => setFilters({ search: "", category: "", condition: "", sort: "newest", page: 1, limit: 12 })} />
+            <EmptyMarketplaceState onReset={() => setFilters({ search: "", category: "", subcategory: "", condition: "", sort: "newest", page: 1, limit: 12 })} />
           ) : (
             <>
               <motion.div 
