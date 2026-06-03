@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, CheckSquare, Package, Archive, Users, BarChart3, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Package, Archive, Users, BarChart3, LogOut, Settings, Printer } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import clsx from "clsx";
 
@@ -7,6 +7,7 @@ const ADMIN_LINKS = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Pending Approvals", path: "/admin/approvals", icon: CheckSquare },
   { name: "Orders", path: "/admin/orders", icon: Package },
+  { name: "Print Orders", path: "/admin/print-orders", icon: Printer },
   { name: "Inventory", path: "/admin/inventory", icon: Archive },
   { name: "Users", path: "/admin/users", icon: Users },
   { name: "Reports", path: "/admin/reports", icon: BarChart3 },

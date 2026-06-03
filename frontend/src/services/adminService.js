@@ -54,5 +54,15 @@ export const adminService = {
   changePassword: async (data) => {
     const response = await api.put("/admin/change-password", data);
     return response.data;
+  },
+
+  getPrintOrders: async () => {
+    const response = await api.get("/admin/print-orders");
+    return response.data;
+  },
+
+  updatePrintOrderStatus: async (id, status) => {
+    const response = await api.put(`/admin/print-orders/${id}/status`, { status });
+    return response.data;
   }
 };
