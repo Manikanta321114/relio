@@ -10,13 +10,12 @@ import {
   PlusCircle, 
   User, 
   ArrowRight,
-  Printer,
-  FileText,
   Bell,
   Trash2,
   Calendar,
   MapPin,
-  HelpCircle
+  HelpCircle,
+  Search
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { bookService } from "../../services/bookService";
@@ -146,13 +145,10 @@ export const Dashboard = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight flex items-center gap-3">
-              Welcome back, {user?.name || "Mani"} 👋
+              Welcome back, {user?.name || "Student"} 👋
             </h1>
             <p className="text-lg md:text-xl text-white/80 font-medium">
-              Your Student Hub
-            </p>
-            <p className="text-sm text-white/60">
-              Your student marketplace hub
+              Your student book marketplace
             </p>
           </div>
           <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 self-start md:self-auto shadow-inner">
@@ -187,18 +183,18 @@ export const Dashboard = () => {
                 <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full uppercase tracking-wider">Marketplace</span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Sell Your Books</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Turn your old books into money.</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Turn your old books into money</p>
             </div>
             <button
               onClick={() => navigate("/sell-book")}
               className="w-full bg-primary hover:bg-primary/95 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
             >
               <PlusCircle size={18} />
-              List a Book
+              List Book
             </button>
           </motion.div>
 
-          {/* Card 2: Print & Delivery */}
+          {/* Card 2: Discover Books */}
           <motion.div
             variants={itemVariants}
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
@@ -207,26 +203,18 @@ export const Dashboard = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-full pointer-events-none group-hover:bg-secondary/10 transition-colors" />
             <div>
               <div className="flex items-center justify-between mb-6">
-                <span className="text-4xl">📄</span>
-                <span className="text-xs font-semibold text-secondary bg-secondary/10 px-3 py-1 rounded-full uppercase tracking-wider">Fast Print</span>
+                <span className="text-4xl">🔍</span>
+                <span className="text-xs font-semibold text-secondary bg-secondary/10 px-3 py-1 rounded-full uppercase tracking-wider">Browse</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Print & Delivery</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4 font-medium">Upload reports, notes, assignments and get printed copies delivered.</p>
-              
-              {/* Features List */}
-              <ul className="grid grid-cols-2 gap-2.5 mb-6 text-sm text-gray-600 dark:text-gray-300 font-medium">
-                <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary" /> PDF upload</li>
-                <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary" /> 50+ page reports</li>
-                <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary" /> Assignments</li>
-                <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary" /> Spiral binding option</li>
-              </ul>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Discover Books</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Find affordable books from students</p>
             </div>
             <button
-              onClick={() => navigate("/print-delivery")}
+              onClick={() => navigate("/")}
               className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-gray-900 font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
             >
-              <Printer size={18} />
-              Order Print
+              <Search size={18} />
+              Browse Marketplace
             </button>
           </motion.div>
         </div>

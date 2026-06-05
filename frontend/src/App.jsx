@@ -24,11 +24,9 @@ const MarketplacePage = lazy(() => import("./pages/public/MarketplacePage").then
 const BookDetailsPage = lazy(() => import("./pages/public/BookDetailsPage").then(m => ({ default: m.BookDetailsPage })));
 const CheckoutPage = lazy(() => import("./pages/public/CheckoutPage").then(m => ({ default: m.CheckoutPage })));
 const Settings = lazy(() => import("./pages/user/Settings").then(m => ({ default: m.Settings })));
-const PrintDelivery = lazy(() => import("./pages/user/PrintDelivery").then(m => ({ default: m.PrintDelivery })));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const AdminApprovals = lazy(() => import("./pages/admin/AdminApprovals").then(m => ({ default: m.AdminApprovals })));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders").then(m => ({ default: m.AdminOrders })));
-const AdminPrintOrders = lazy(() => import("./pages/admin/AdminPrintOrders").then(m => ({ default: m.AdminPrintOrders })));
 const AdminInventory = lazy(() => import("./pages/admin/AdminInventory").then(m => ({ default: m.AdminInventory })));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings").then(m => ({ default: m.AdminSettings })));
 const NotFoundPage = lazy(() => import("./pages/public/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
@@ -63,7 +61,6 @@ export default function App() {
                     <Route path="/wishlist" element={<DashboardLayout><WishlistPage /></DashboardLayout>} />
                     <Route path="/notifications" element={<DashboardLayout><Notifications /></DashboardLayout>} />
                     <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
-                    <Route path="/print-delivery" element={<DashboardLayout><PrintDelivery /></DashboardLayout>} />
                   </Route>
 
                   {/* Protected Admin Routes */}
@@ -71,7 +68,6 @@ export default function App() {
                     <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
                     <Route path="/admin/approvals" element={<AdminLayout><AdminApprovals /></AdminLayout>} />
                     <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
-                    <Route path="/admin/print-orders" element={<AdminLayout><AdminPrintOrders /></AdminLayout>} />
                     <Route path="/admin/inventory" element={<AdminLayout><AdminInventory /></AdminLayout>} />
                     <Route path="/admin/users" element={<AdminLayout><div className="p-10 text-center">Users (Coming Soon)</div></AdminLayout>} />
                     <Route path="/admin/reports" element={<AdminLayout><div className="p-10 text-center">Reports (Coming Soon)</div></AdminLayout>} />
