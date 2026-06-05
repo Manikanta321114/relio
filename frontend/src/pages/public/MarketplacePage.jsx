@@ -63,8 +63,8 @@ export const MarketplacePage = () => {
           <p className="text-gray-500 mt-1">Discover pre-loved books at great prices.</p>
         </div>
         
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:w-80">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+          <div className="relative w-full sm:w-80">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -77,35 +77,37 @@ export const MarketplacePage = () => {
             />
           </div>
           
-          {/* Mobile Filter Toggle */}
-          <button 
-            onClick={() => setIsMobileFiltersOpen(true)}
-            className="lg:hidden p-3 bg-white border border-gray-200 rounded-full text-gray-700 hover:bg-gray-50 shadow-sm"
-          >
-            <SlidersHorizontal size={20} />
-          </button>
-          
-          {/* Desktop Sort */}
-          <div className="hidden lg:block relative">
-            <select
-              value={filters.sort}
-              onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value, page: 1 }))}
-              className="appearance-none bg-white border border-gray-200 text-gray-700 py-3 pl-4 pr-10 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-medium cursor-pointer"
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Mobile/Tablet Filter Toggle */}
+            <button 
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="lg:hidden p-3 bg-white border border-gray-200 rounded-full text-gray-700 hover:bg-gray-50 shadow-sm shrink-0"
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="low_to_high">Price: Low to High</option>
-              <option value="high_to_low">Price: High to Low</option>
-            </select>
+              <SlidersHorizontal size={20} />
+            </button>
+            
+            {/* Sort Dropdown */}
+            <div className="relative flex-1 sm:flex-none">
+              <select
+                value={filters.sort}
+                onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value, page: 1 }))}
+                className="appearance-none bg-white border border-gray-200 text-gray-700 py-3 pl-4 pr-10 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-medium cursor-pointer w-full"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="low_to_high">Price: Low to High</option>
+                <option value="high_to_low">Price: High to Low</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Premium Category Quick Filters */}
-      <div className="mb-8 overflow-x-auto pb-3 -mx-4 px-4 md:mx-0 md:px-0 flex gap-3 scrollbar-thin scrollbar-thumb-gray-200">
+      <div className="mb-8 flex overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:pb-0 sm:flex-wrap gap-2.5 md:gap-3 scrollbar-thin scrollbar-thumb-gray-200">
         <button
           onClick={() => setFilters(prev => ({ ...prev, category: "", subcategory: "", page: 1 }))}
-          className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
+          className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
             filters.category === ""
               ? "bg-primary text-white border-primary"
               : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
@@ -117,7 +119,7 @@ export const MarketplacePage = () => {
           <button
             key={cat}
             onClick={() => setFilters(prev => ({ ...prev, category: cat, subcategory: "", page: 1 }))}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
+            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap shadow-sm border ${
               filters.category.toLowerCase() === cat.toLowerCase()
                 ? "bg-primary text-white border-primary"
                 : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
