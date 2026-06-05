@@ -73,7 +73,7 @@ export const MarketplacePage = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full leading-5 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-sm"
-              placeholder="Search books, UPSC materials..."
+              placeholder="Search books by title, author, category..."
             />
           </div>
           

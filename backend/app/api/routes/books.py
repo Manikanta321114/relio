@@ -55,7 +55,13 @@ async def get_books(
     query = {"status": "approved"}
     
     if search:
-        query["title"] = {"$regex": search.strip(), "$options": "i"}
+        search_regex = {"$regex": search.strip(), "$options": "i"}
+        query["$or"] = [
+            {"title": search_regex},
+            {"author": search_regex},
+            {"category": search_regex},
+            {"subcategory": search_regex}
+        ]
     
     if category:
         import re
