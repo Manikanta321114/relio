@@ -26,6 +26,31 @@ export const ReviewModal = ({ isOpen, onClose, book, onApprove, onReject, isProc
     }
   }, [book]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!book) return null;
 
   const handleConfirmReject = () => {
@@ -38,20 +63,20 @@ export const ReviewModal = ({ isOpen, onClose, book, onApprove, onReject, isProc
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl bg-white rounded-3xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[92vh] border border-gray-100"
+            className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-y-auto flex flex-col max-h-[90vh] border border-gray-100 z-10"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-8 py-5 border-b border-gray-100 bg-gray-50/50">
@@ -309,7 +334,7 @@ export const ReviewModal = ({ isOpen, onClose, book, onApprove, onReject, isProc
               </div>
             )}
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
