@@ -7,7 +7,8 @@ export const printOrderService = {
   },
   getMyPrintOrders: async () => {
     const response = await api.get("/print-orders/my-orders");
-    return response.data;
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.orders || data?.data || []);
   },
   cancelPrintOrder: async (orderId) => {
     const response = await api.post(`/print-orders/${orderId}/cancel`);
@@ -15,7 +16,8 @@ export const printOrderService = {
   },
   getAllPrintOrders: async () => {
     const response = await api.get("/print-orders/admin/all");
-    return response.data;
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.orders || data?.data || []);
   },
   updatePrintOrderStatus: async (orderId, status, adminNotes = "") => {
     const response = await api.put(`/print-orders/admin/${orderId}/status`, {

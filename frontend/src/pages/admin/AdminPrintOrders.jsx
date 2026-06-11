@@ -12,7 +12,8 @@ import {
   Truck,
   MessageSquare,
   Search,
-  Filter
+  Filter,
+  School
 } from "lucide-react";
 import { printOrderService } from "../../services/printOrderService";
 import { Card } from "../../components/ui/Card";
@@ -36,16 +37,19 @@ export const AdminPrintOrders = () => {
     try {
       setIsLoading(true);
       const data = await printOrderService.getAllPrintOrders();
-      setOrders(data);
+      const safeData = Array.isArray(data) ? data : [];
+      setOrders(safeData);
     } catch (err) {
-      console.error(err);
+      console.error("AdminPrintOrders fetch error:", err);
       toast.error("Failed to fetch print orders");
+      setOrders([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleStatusUpdate = async (orderId, newStatus) => {
+    if (!orderId) return;
     const note = adminNotes[orderId] || "";
     try {
       await printOrderService.updatePrintOrderStatus(orderId, newStatus, note);
@@ -62,14 +66,21 @@ export const AdminPrintOrders = () => {
     }
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.order_id.toLowerCase().includes(search.toLowerCase()) ||
-      order.delivery_details.student_name.toLowerCase().includes(search.toLowerCase()) ||
-      order.delivery_details.phone_number.includes(search) ||
-      order.pdf_name.toLowerCase().includes(search.toLowerCase());
+  const safeOrdersList = Array.isArray(orders) ? orders : [];
 
-    const matchesStatus = statusFilter === "All" || order.status === statusFilter;
+  const filteredOrders = safeOrdersList.filter(order => {
+    const orderId = order?.order_id || "";
+    const studentName = order?.delivery_details?.student_name || "";
+    const phone = String(order?.delivery_details?.phone_number || order?.delivery_details?.phone || "");
+    const pdfName = order?.pdf_name || "";
+
+    const matchesSearch = 
+      orderId.toLowerCase().includes(search.toLowerCase()) ||
+      studentName.toLowerCase().includes(search.toLowerCase()) ||
+      phone.includes(search) ||
+      pdfName.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus = statusFilter === "All" || (order?.status || "Pending") === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -126,174 +137,181 @@ export const AdminPrintOrders = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {filteredOrders.map((order) => (
-            <Card key={order.id || order._id} className="p-6 md:p-8 bg-white dark:bg-gray-900 shadow-lg border border-gray-100 dark:border-gray-800 flex flex-col lg:flex-row justify-between gap-6">
-              
-              {/* Order Info Column */}
-              <div className="space-y-4 flex-1">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-lg font-bold text-gray-905 dark:text-white">{order.order_id}</span>
-                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
-                    order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400" :
-                    order.status === "Cancelled" ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400" :
-                    order.status === "Pending" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400" :
-                    "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
-                  }`}>
-                    {order.status}
-                  </span>
-                  <span className="text-xs text-gray-400">Placed: {new Date(order.created_at).toLocaleString()}</span>
-                </div>
-
-                {/* Document & Options */}
-                <div className="bg-gray-50 dark:bg-gray-850 p-4 rounded-xl border border-gray-150 dark:border-gray-800 space-y-2.5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <FileText size={18} className="text-red-500 shrink-0" />
-                      <span className="font-bold text-sm truncate text-gray-900 dark:text-white">{order.pdf_name}</span>
-                      <span className="text-xs text-gray-400 shrink-0">({order.pages} pages)</span>
-                    </div>
-                    {order.pdf_url && (
-                      <a
-                        href={order.pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 shrink-0"
-                      >
-                        <Download size={14} /> Download PDF
-                      </a>
-                    )}
+          {filteredOrders.map((order, index) => {
+            const orderIdVal = order?.id || order?._id || `temp-${index}`;
+            const statusVal = order?.status || "Pending";
+            
+            return (
+              <Card key={orderIdVal} className="p-6 md:p-8 bg-white dark:bg-gray-900 shadow-lg border border-gray-100 dark:border-gray-800 flex flex-col lg:flex-row justify-between gap-6">
+                
+                {/* Order Info Column */}
+                <div className="space-y-4 flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-lg font-bold text-gray-905 dark:text-white">{order?.order_id || "N/A"}</span>
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                      statusVal === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400" :
+                      statusVal === "Cancelled" ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400" :
+                      statusVal === "Pending" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400" :
+                      "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
+                    }`}>
+                      {statusVal}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      Placed: {order?.created_at ? new Date(order.created_at).toLocaleString() : "N/A"}
+                    </span>
                   </div>
-                  
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 border-t pt-2 border-gray-200/50 dark:border-gray-800">
-                    <span>Copies: <strong className="text-gray-750 dark:text-gray-200">{order.copies}</strong></span>
-                    <span>•</span>
-                    <span>Color Mode: <strong className="text-indigo-600 dark:text-indigo-400">{order.print_type}</strong></span>
-                    <span>•</span>
-                    <span>Binding: <strong className="text-purple-600 dark:text-purple-400">{order.binding}</strong></span>
-                  </div>
-                </div>
 
-                {/* Delivery and Contacts */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
-                      <User size={15} className="text-gray-400" />
-                      {order.delivery_details.student_name}
+                  {/* Document & Options */}
+                  <div className="bg-gray-50 dark:bg-gray-850 p-4 rounded-xl border border-gray-150 dark:border-gray-800 space-y-2.5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText size={18} className="text-red-500 shrink-0" />
+                        <span className="font-bold text-sm truncate text-gray-900 dark:text-white">{order?.pdf_name || "document.pdf"}</span>
+                        <span className="text-xs text-gray-400 shrink-0">({order?.pages || 0} pages)</span>
+                      </div>
+                      {order?.pdf_url && (
+                        <a
+                          href={order.pdf_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 shrink-0"
+                        >
+                          <Download size={14} /> Download PDF
+                        </a>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Phone size={14} className="text-gray-400" />
-                      {order.delivery_details.phone_number}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <School size={14} className="text-gray-400" />
-                      {order.delivery_details.college_name}
+                    
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 border-t pt-2 border-gray-200/50 dark:border-gray-800">
+                      <span>Copies: <strong className="text-gray-750 dark:text-gray-200">{order?.copies || 0}</strong></span>
+                      <span>•</span>
+                      <span>Color Mode: <strong className="text-indigo-600 dark:text-indigo-400">{order?.print_type || "B/W"}</strong></span>
+                      <span>•</span>
+                      <span>Binding: <strong className="text-purple-600 dark:text-purple-400">{order?.binding || "None"}</strong></span>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-2 text-xs">
-                      <MapPin size={15} className="text-gray-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-gray-900 dark:text-white">{order.delivery_details.delivery_location} Address:</span>
-                        <p className="text-gray-500 mt-0.5">{order.delivery_details.address}</p>
-                        {order.delivery_details.landmark && (
-                          <p className="text-gray-400 text-[11px]">Landmark: {order.delivery_details.landmark}</p>
-                        )}
+                  {/* Delivery and Contacts */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
+                        <User size={15} className="text-gray-400" />
+                        {order?.delivery_details?.student_name || "Not provided"}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Phone size={14} className="text-gray-400" />
+                        {order?.delivery_details?.phone_number || order?.delivery_details?.phone || "Not provided"}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <School size={14} className="text-gray-400" />
+                        {order?.delivery_details?.college_name || "Not provided"}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-bold">
-                      <Calendar size={14} />
-                      Required Time: {order.delivery_details.required_time}
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-start gap-2 text-xs">
+                        <MapPin size={15} className="text-gray-400 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="font-bold text-gray-900 dark:text-white">{order?.delivery_details?.delivery_location || "Delivery"} Address:</span>
+                          <p className="text-gray-500 mt-0.5">{order?.delivery_details?.address || "Not provided"}</p>
+                          {order?.delivery_details?.landmark && (
+                            <p className="text-gray-400 text-[11px]">Landmark: {order?.delivery_details?.landmark}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-bold">
+                        <Calendar size={14} />
+                        Required Time: {order?.delivery_details?.required_time || "N/A"}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Column */}
-              <div className="lg:w-80 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-gray-800 pt-6 lg:pt-0 lg:pl-6 gap-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Pricing / Payments</span>
-                  <div className="text-right">
-                    <span className="text-lg font-bold text-green-600">₹{order.total_price}</span>
-                    <p className="text-[10px] text-gray-450 uppercase font-semibold">{order.payment_method} • {order.payment_status}</p>
+                {/* Action Column */}
+                <div className="lg:w-80 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-gray-800 pt-6 lg:pt-0 lg:pl-6 gap-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">Pricing / Payments</span>
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-green-600">₹{order?.total_price || 0}</span>
+                      <p className="text-[10px] text-gray-450 uppercase font-semibold">{order?.payment_method || "COD"} • {order?.payment_status || "Pending"}</p>
+                    </div>
                   </div>
-                </div>
 
-                {/* Custom Admin Note Input */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                    <MessageSquare size={13} /> Add Delivery Note / Message
-                  </label>
-                  <textarea
-                    rows="2"
-                    placeholder="e.g. Your copies will be delivered by 5PM"
-                    value={adminNotes[order.id] || ""}
-                    onChange={(e) => setAdminNotes({ ...adminNotes, [order.id]: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-transparent text-xs outline-none focus:ring-2 focus:ring-primary/50 resize-none"
-                  />
-                </div>
-
-                {/* Status Update Actions */}
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Update Processing Status</span>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {order.status !== "Cancelled" && order.status !== "Delivered" && (
-                      <>
-                        {order.status === "Pending" && (
-                          <button
-                            onClick={() => handleStatusUpdate(order.id, "Accepted")}
-                            className="w-full py-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-600 hover:text-white dark:text-indigo-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-indigo-500/20"
-                          >
-                            Accept Order
-                          </button>
-                        )}
-                        {order.status === "Accepted" && (
-                          <button
-                            onClick={() => handleStatusUpdate(order.id, "Printing")}
-                            className="w-full py-2 bg-blue-500/10 hover:bg-blue-500 text-blue-600 hover:text-white dark:text-blue-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-blue-500/20"
-                          >
-                            Start Printing
-                          </button>
-                        )}
-                        {order.status === "Printing" && (
-                          <button
-                            onClick={() => handleStatusUpdate(order.id, "Out for Delivery")}
-                            className="w-full py-2 bg-amber-500/10 hover:bg-amber-500 text-amber-600 hover:text-white dark:text-amber-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-amber-500/20"
-                          >
-                            Ship Out
-                          </button>
-                        )}
-                        {order.status === "Out for Delivery" && (
-                          <button
-                            onClick={() => handleStatusUpdate(order.id, "Delivered")}
-                            className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white dark:text-emerald-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-emerald-500/20 col-span-2"
-                          >
-                            Mark Delivered
-                          </button>
-                        )}
-                      </>
-                    )}
-                    
-                    {/* Allow cancel if Pending or Accepted */}
-                    {(order.status === "Pending" || order.status === "Accepted") && (
-                      <button
-                        onClick={() => {
-                          if (window.confirm("Reject/Cancel this order?")) {
-                            handleStatusUpdate(order.id, "Cancelled");
-                          }
-                        }}
-                        className="w-full py-2 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white dark:text-red-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-red-500/20"
-                      >
-                        Cancel Job
-                      </button>
-                    )}
+                  {/* Custom Admin Note Input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <MessageSquare size={13} /> Add Delivery Note / Message
+                    </label>
+                    <textarea
+                      rows="2"
+                      placeholder="e.g. Your copies will be delivered by 5PM"
+                      value={adminNotes[orderIdVal] || ""}
+                      onChange={(e) => setAdminNotes({ ...adminNotes, [orderIdVal]: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-transparent text-xs outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    />
                   </div>
+
+                  {/* Status Update Actions */}
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Update Processing Status</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {statusVal !== "Cancelled" && statusVal !== "Delivered" && (
+                        <>
+                          {statusVal === "Pending" && (
+                            <button
+                              onClick={() => handleStatusUpdate(orderIdVal, "Accepted")}
+                              className="w-full py-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-600 hover:text-white dark:text-indigo-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-indigo-500/20"
+                            >
+                              Accept Order
+                            </button>
+                          )}
+                          {statusVal === "Accepted" && (
+                            <button
+                              onClick={() => handleStatusUpdate(orderIdVal, "Printing")}
+                              className="w-full py-2 bg-blue-500/10 hover:bg-blue-500 text-blue-600 hover:text-white dark:text-blue-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-blue-500/20"
+                            >
+                              Start Printing
+                            </button>
+                          )}
+                          {statusVal === "Printing" && (
+                            <button
+                              onClick={() => handleStatusUpdate(orderIdVal, "Out for Delivery")}
+                              className="w-full py-2 bg-amber-500/10 hover:bg-amber-500 text-amber-600 hover:text-white dark:text-amber-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-amber-500/20"
+                            >
+                              Ship Out
+                            </button>
+                          )}
+                          {statusVal === "Out for Delivery" && (
+                            <button
+                              onClick={() => handleStatusUpdate(orderIdVal, "Delivered")}
+                              className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white dark:text-emerald-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-emerald-500/20 col-span-2"
+                            >
+                              Mark Delivered
+                            </button>
+                          )}
+                        </>
+                      )}
+                      
+                      {/* Allow cancel if Pending or Accepted */}
+                      {(statusVal === "Pending" || statusVal === "Accepted") && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm("Reject/Cancel this order?")) {
+                              handleStatusUpdate(orderIdVal, "Cancelled");
+                            }
+                          }}
+                          className="w-full py-2 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white dark:text-red-400 dark:hover:text-white text-xs font-bold rounded-xl transition-all border border-red-500/20"
+                        >
+                          Cancel Job
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
 
-              </div>
-
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
