@@ -28,6 +28,7 @@ import { notificationService } from "../../services/notificationService";
 import { printOrderService } from "../../services/printOrderService";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Button } from "../../components/ui/Button";
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -276,7 +277,7 @@ export const Dashboard = () => {
           className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.totalUploaded}</span>
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats?.totalUploaded || 0}</span>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">My Listings</p>
           </div>
           <div className="h-10 w-10 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -293,7 +294,7 @@ export const Dashboard = () => {
           className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.ordersCount}</span>
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats?.ordersCount || 0}</span>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">My Orders</p>
           </div>
           <div className="h-10 w-10 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -310,7 +311,7 @@ export const Dashboard = () => {
           className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.wishlistCount}</span>
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats?.wishlistCount || 0}</span>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wishlist</p>
           </div>
           <div className="h-10 w-10 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -327,7 +328,7 @@ export const Dashboard = () => {
           className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{notificationsList.length}</span>
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{notificationsList?.length || 0}</span>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifications</p>
           </div>
           <div className="h-10 w-10 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -355,7 +356,7 @@ export const Dashboard = () => {
               }`}
             >
               <BookOpen size={16} />
-              Uploads ({stats.totalUploaded})
+              Uploads ({stats?.totalUploaded || 0})
             </button>
             <button
               onClick={() => setActiveTab("orders")}
@@ -366,7 +367,7 @@ export const Dashboard = () => {
               }`}
             >
               <ShoppingBag size={16} />
-              Orders ({stats.ordersCount})
+              Orders ({stats?.ordersCount || 0})
             </button>
             <button
               onClick={() => setActiveTab("printOrders")}
@@ -377,7 +378,7 @@ export const Dashboard = () => {
               }`}
             >
               <FileText size={16} />
-              Print Orders ({printOrdersList.length})
+              Print Orders ({printOrdersList?.length || 0})
             </button>
             <button
               onClick={() => setActiveTab("wishlist")}
@@ -388,7 +389,7 @@ export const Dashboard = () => {
               }`}
             >
               <Heart size={16} />
-              Wishlist ({stats.wishlistCount})
+              Wishlist ({stats?.wishlistCount || 0})
             </button>
             <button
               onClick={() => setActiveTab("notifications")}
@@ -415,7 +416,7 @@ export const Dashboard = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                {uploadsList.length === 0 ? (
+                {!Array.isArray(uploadsList) || uploadsList.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
                     <span className="text-4xl mb-3 select-none">📚</span>
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">No uploads yet</h3>
@@ -426,7 +427,7 @@ export const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {uploadsList.slice(0, 4).map((book) => (
+                    {(uploadsList || []).slice(0, 4).map((book) => (
                       <div key={book.id || book._id} className="flex gap-4 p-4 bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 items-center justify-between">
                         <div className="flex gap-3 items-center min-w-0">
                           <div className="w-12 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden shrink-0 flex items-center justify-center text-gray-300">
@@ -438,7 +439,7 @@ export const Dashboard = () => {
                           </div>
                           <div className="min-w-0">
                             <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">{book.title}</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">₹{book.admin_price || book.price}</p>
+                            <p className="text-xs text-gray-550 dark:text-gray-400 mt-0.5">₹{book.admin_price || book.price}</p>
                           </div>
                         </div>
                         <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 ${
@@ -452,7 +453,7 @@ export const Dashboard = () => {
                     ))}
                   </div>
                 )}
-                {uploadsList.length > 4 && (
+                {Array.isArray(uploadsList) && uploadsList.length > 4 && (
                   <div className="text-right">
                     <Link to="/my-uploads" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 justify-end">
                       View all uploads <ChevronRight size={16} />
@@ -470,7 +471,7 @@ export const Dashboard = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                {ordersList.length === 0 ? (
+                {!Array.isArray(ordersList) || ordersList.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
                     <span className="text-4xl mb-3 select-none">📦</span>
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">No orders yet</h3>
@@ -481,7 +482,7 @@ export const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {ordersList.slice(0, 4).map((order) => (
+                    {(ordersList || []).slice(0, 4).map((order) => (
                       <div key={order.id || order._id} className="p-4 bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center">
                         <div className="min-w-0 space-y-1">
                           <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">Order ID: {order._id ? order._id.slice(-8).toUpperCase() : order.id}</h4>
@@ -502,7 +503,7 @@ export const Dashboard = () => {
                     ))}
                   </div>
                 )}
-                {ordersList.length > 4 && (
+                {Array.isArray(ordersList) && ordersList.length > 4 && (
                   <div className="text-right">
                     <Link to="/my-orders" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 justify-end">
                       View all orders <ChevronRight size={16} />
@@ -520,18 +521,18 @@ export const Dashboard = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                {printOrdersList.length === 0 ? (
+                {!Array.isArray(printOrdersList) || printOrdersList.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
                     <span className="text-4xl mb-3 select-none">📄</span>
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">No print orders yet</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Need assignments, lab reports, or notes printed and delivered? Try Xerox Print service.</p>
+                    <p className="text-xs text-gray-550 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Need assignments, lab reports, or notes printed and delivered? Try Xerox Print service.</p>
                     <Link to="/print-delivery" className="mt-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-indigo-750 transition-all active:scale-95">
                       Order a Print
                     </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {printOrdersList.map((order) => (
+                    {(printOrdersList || []).map((order) => (
                       <div key={order.id || order._id} className="p-5 bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between gap-4">
                         <div className="flex justify-between items-start min-w-0">
                           <div className="min-w-0 space-y-1">
@@ -552,7 +553,7 @@ export const Dashboard = () => {
                                 </>
                               )}
                             </div>
-                            <p className="text-xs text-gray-405 mt-1">Required: {order.delivery_details.required_time}</p>
+                            <p className="text-xs text-gray-405 mt-1">Required: {order.delivery_details?.required_time || "Not provided"}</p>
                             <p className="text-xs text-gray-405">Payment: {order.payment_method} ({order.payment_status})</p>
                             {order.admin_notes && (
                               <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 rounded-lg text-xs">
@@ -606,19 +607,19 @@ export const Dashboard = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                {wishlistList.length === 0 ? (
+                {!Array.isArray(wishlistList) || wishlistList.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
                     <span className="text-4xl mb-3 select-none">❤️</span>
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">Your wishlist is empty</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Tap the heart on any book to save it to your wishlist here.</p>
+                    <p className="text-xs text-gray-550 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Tap the heart on any book to save it to your wishlist here.</p>
                     <Link to="/" className="mt-4 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-primary/95 transition-all active:scale-95">
                       Browse Marketplace
                     </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {wishlistList.slice(0, 4).map((item) => {
-                      const book = item.book_id || item.book || item;
+                    {(wishlistList || []).slice(0, 4).map((item) => {
+                      const book = item?.book_id || item?.book || item;
                       if (!book) return null;
                       return (
                         <div key={item.id || item._id} className="flex gap-4 p-4 bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 items-center justify-between">
@@ -632,7 +633,7 @@ export const Dashboard = () => {
                             </div>
                             <div className="min-w-0">
                               <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">{book.title}</h4>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">₹{book.admin_price || book.price}</p>
+                              <p className="text-xs text-gray-550 dark:text-gray-400 mt-0.5">₹{book.admin_price || book.price}</p>
                             </div>
                           </div>
                           <div className="flex gap-1.5">
@@ -654,7 +655,7 @@ export const Dashboard = () => {
                     })}
                   </div>
                 )}
-                {wishlistList.length > 4 && (
+                {Array.isArray(wishlistList) && wishlistList.length > 4 && (
                   <div className="text-right">
                     <Link to="/wishlist" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 justify-end">
                       View all wishlist <ChevronRight size={16} />
@@ -672,19 +673,19 @@ export const Dashboard = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                {notificationsList.length === 0 ? (
+                {!Array.isArray(notificationsList) || notificationsList.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
                     <span className="text-4xl mb-3 select-none">🔔</span>
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">All caught up!</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">You don't have any notifications or activity updates at the moment.</p>
+                    <p className="text-xs text-gray-550 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">You don't have any notifications or activity updates at the moment.</p>
                   </div>
                 ) : (
                   <div className="flow-root">
                     <ul className="-mb-8">
-                      {notificationsList.slice(0, 4).map((act, actIdx) => (
+                      {(notificationsList || []).slice(0, 4).map((act, actIdx) => (
                         <li key={act.id || act._id}>
                           <div className="relative pb-8">
-                            {actIdx !== Math.min(4, notificationsList.length) - 1 ? (
+                            {actIdx !== Math.min(4, notificationsList?.length || 0) - 1 ? (
                               <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-800" aria-hidden="true" />
                             ) : null}
                             <div className="relative flex space-x-3">
@@ -712,7 +713,7 @@ export const Dashboard = () => {
                     </ul>
                   </div>
                 )}
-                {notificationsList.length > 4 && (
+                {Array.isArray(notificationsList) && notificationsList.length > 4 && (
                   <div className="text-right">
                     <Link to="/notifications" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 justify-end">
                       View all notifications <ChevronRight size={16} />
