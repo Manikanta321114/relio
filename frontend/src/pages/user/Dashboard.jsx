@@ -202,61 +202,24 @@ export const Dashboard = () => {
             </button>
           </motion.div>
 
-          {/* Card 2: Discover Books */}
+          {/* Card 2: Xerox & Print Delivery (Beta) */}
           <motion.div
             variants={itemVariants}
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            className="group relative overflow-hidden rounded-3xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-300"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-full pointer-events-none group-hover:bg-secondary/10 transition-colors" />
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-4xl">🔍</span>
-                <span className="text-xs font-semibold text-secondary bg-secondary/10 px-3 py-1 rounded-full uppercase tracking-wider">Browse</span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Discover Books</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Find affordable books from students</p>
-            </div>
-            <button
-              onClick={() => navigate("/")}
-              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-gray-900 font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
-            >
-              <Search size={18} />
-              Browse Marketplace
-            </button>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Student Services Section */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <span>Student Services</span>
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Card: Xerox & Print Delivery (Beta) */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            className="group relative overflow-hidden rounded-3xl bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/10 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-300 md:col-span-1"
+            className="group relative overflow-hidden rounded-3xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-indigo-500/20 dark:hover:border-indigo-500/20 transition-all duration-300"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-full pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
             <div>
               <div className="flex items-center justify-between mb-6">
                 <span className="text-4xl">📄</span>
-                <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                  Beta
-                </span>
+                <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full uppercase tracking-wider">Beta</span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Xerox & Print Delivery (Beta)</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">
-                Upload your notes, reports, and assignments. Get printed copies delivered easily.
-              </p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Upload your notes, reports, and assignments. Get printed copies delivered easily.</p>
             </div>
             <button
               onClick={() => navigate("/print-delivery")}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
             >
               Try Print Service
             </button>
