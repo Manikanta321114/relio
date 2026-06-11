@@ -80,22 +80,58 @@ class PrintOrderResponse(BaseModel):
 
     @classmethod
     def from_mongo(cls, doc: dict):
+        raw_details = doc.get("delivery_details", {})
+        
+        # Resilient mapping for legacy documents
+        student_name = raw_details.get("student_name", "")
+        phone_number = raw_details.get("phone_number") or raw_details.get("phone") or ""
+        college_name = raw_details.get("college_name", "")
+        delivery_location = raw_details.get("delivery_location") or raw_details.get("delivery_type") or "College"
+        address = raw_details.get("address") or raw_details.get("full_address") or ""
+        landmark = raw_details.get("landmark")
+        required_time = raw_details.get("required_time") or raw_details.get("required_delivery_time") or "Today"
+        
+        details = PrintDeliveryDetails(
+            student_name=student_name,
+            phone_number=phone_number,
+            college_name=college_name,
+            delivery_location=delivery_location,
+            address=address,
+            landmark=landmark,
+            required_time=required_time
+        )
+        
+        # Print options mapping
+        ptype = doc.get("print_type") or doc.get("color_mode") or "B/W"
+        if ptype.lower() == "bw":
+            ptype = "B/W"
+        elif ptype.lower() == "color":
+            ptype = "Color"
+            
+        binding = (doc.get("binding") or "None").title()
+        
+        # Status mapping
+        status = doc.get("status") or doc.get("order_status") or "Pending"
+        status = status.title()
+        if status == "Out For Delivery":
+            status = "Out for Delivery"
+            
         return cls(
             id=str(doc["_id"]),
             order_id=doc.get("order_id", ""),
             user_id=str(doc["user_id"]),
-            pdf_name=doc.get("pdf_name", "document.pdf"),
+            pdf_name=doc.get("pdf_name") or doc.get("pdf_file") or "document.pdf",
             pdf_url=doc.get("pdf_url", ""),
             cloudinary_public_id=doc.get("cloudinary_public_id", ""),
             pages=doc.get("pages", 1),
             copies=doc.get("copies", 1),
-            print_type=doc.get("print_type", "B/W"),
-            binding=doc.get("binding", "None"),
-            total_price=doc.get("total_price", 0.0),
+            print_type=ptype,
+            binding=binding,
+            total_price=doc.get("total_price") or doc.get("price") or 0.0,
             payment_method=doc.get("payment_method", "COD"),
             payment_status=doc.get("payment_status", "Pending"),
-            delivery_details=PrintDeliveryDetails(**doc["delivery_details"]),
-            status=doc.get("status", "Pending"),
+            delivery_details=details,
+            status=status,
             admin_notes=doc.get("admin_notes"),
             created_at=doc["created_at"],
             updated_at=doc.get("updated_at", doc["created_at"])

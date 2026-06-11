@@ -83,9 +83,18 @@ async def create_print_order(order_data: PrintOrderCreate, current_user: UserMod
 
 @router.get("/my-orders", response_model=List[PrintOrderResponse])
 async def get_my_print_orders(current_user: UserModel = Depends(get_current_user)):
-    cursor = db.db.print_orders.find({"user_id": str(current_user.id)}).sort("created_at", -1)
-    orders = await cursor.to_list(length=100)
-    return [PrintOrderResponse.from_mongo(doc) for doc in orders]
+    try:
+        cursor = db.db.print_orders.find({"user_id": str(current_user.id)}).sort("created_at", -1)
+        orders = await cursor.to_list(length=100)
+        return [PrintOrderResponse.from_mongo(doc) for doc in orders]
+    except Exception as e:
+        print("Backend Get My Print Orders Failed:", e)
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch my print orders: {str(e)}"
+        )
 
 @router.post("/{order_id}/cancel", response_model=PrintOrderResponse)
 async def cancel_print_order(order_id: str, current_user: UserModel = Depends(get_current_user)):
@@ -127,9 +136,18 @@ async def cancel_print_order(order_id: str, current_user: UserModel = Depends(ge
 
 @router.get("/admin/all", response_model=List[PrintOrderResponse])
 async def get_all_print_orders(admin: UserModel = Depends(require_admin)):
-    cursor = db.db.print_orders.find({}).sort("created_at", -1)
-    orders = await cursor.to_list(length=100)
-    return [PrintOrderResponse.from_mongo(doc) for doc in orders]
+    try:
+        cursor = db.db.print_orders.find({}).sort("created_at", -1)
+        orders = await cursor.to_list(length=100)
+        return [PrintOrderResponse.from_mongo(doc) for doc in orders]
+    except Exception as e:
+        print("Backend Get All Print Orders Failed:", e)
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch print orders: {str(e)}"
+        )
 
 @router.put("/admin/{order_id}/status", response_model=PrintOrderResponse)
 async def update_print_order_status(order_id: str, payload: PrintStatusUpdate, admin: UserModel = Depends(require_admin)):
