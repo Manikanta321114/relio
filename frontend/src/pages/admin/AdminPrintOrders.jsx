@@ -216,6 +216,19 @@ export const AdminPrintOrders = () => {
                           {order?.delivery_details?.landmark && (
                             <p className="text-gray-400 text-[11px]">Landmark: {order?.delivery_details?.landmark}</p>
                           )}
+                          {order?.delivery_details?.latitude && order?.delivery_details?.longitude && (
+                            <div className="mt-2">
+                              <a
+                                href={`https://maps.google.com/?q=${order.delivery_details.latitude},${order.delivery_details.longitude}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-[11px] font-bold px-2.5 py-1.5 rounded-lg border border-indigo-100 dark:border-indigo-900 shadow-sm transition-all focus:outline-none"
+                              >
+                                <MapPin size={12} className="text-indigo-650 dark:text-indigo-405" />
+                                Open in Google Maps
+                              </a>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-bold">

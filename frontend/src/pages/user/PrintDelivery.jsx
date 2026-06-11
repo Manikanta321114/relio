@@ -40,7 +40,6 @@ export const PrintDelivery = () => {
   const [binding, setBinding] = useState("None"); // None, Spiral
   const [paymentMethod, setPaymentMethod] = useState("COD"); // COD, Online
   
-  // Delivery Details
   const [studentName, setStudentName] = useState("");
   const [phone, setPhone] = useState("");
   const [collegeName, setCollegeName] = useState("");
@@ -49,6 +48,34 @@ export const PrintDelivery = () => {
   const [landmark, setLandmark] = useState("");
   const [requiredTime, setRequiredTime] = useState("Today"); // Today, Tomorrow, Specific Date
   const [customDate, setCustomDate] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setIsFetchingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setIsFetchingLocation(false);
+        toast.success("Location captured successfully!");
+      },
+      (error) => {
+        setIsFetchingLocation(false);
+        console.error("Geolocation error:", error);
+        if (error.code === error.PERMISSION_DENIED) {
+          toast.error("Location permission denied. Please enter address manually.");
+        } else {
+          toast.error("Failed to retrieve location. Please enter address manually.");
+        }
+      }
+    );
+  };
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdOrder, setCreatedOrder] = useState(null);
@@ -184,7 +211,9 @@ export const PrintDelivery = () => {
           delivery_location: deliveryLocation,
           address: address,
           landmark: landmark || null,
-          required_time: requiredTime === "Specific Date" ? customDate : requiredTime
+          required_time: requiredTime === "Specific Date" ? customDate : requiredTime,
+          latitude: latitude,
+          longitude: longitude
         }
       };
 
@@ -466,6 +495,24 @@ export const PrintDelivery = () => {
                     </label>
                   ))}
                 </div>
+              </div>
+
+              <div className="pt-1 pb-1">
+                <button
+                  type="button"
+                  onClick={handleGetLocation}
+                  className="w-full text-xs font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 py-2.5 rounded-xl border border-indigo-100 dark:border-indigo-900 flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-sm"
+                  disabled={isFetchingLocation}
+                >
+                  <MapPin size={14} className={isFetchingLocation ? "animate-pulse" : ""} />
+                  {isFetchingLocation ? "Accessing Location..." : latitude ? "Current Location Captured ✓" : "Use My Current Location"}
+                </button>
+                {latitude && longitude && (
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1.5 px-1 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Coordinates Captured: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                  </p>
+                )}
               </div>
 
               <Input label="Delivery Address *" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g. Room 304, Block C, Campus Hostel" />

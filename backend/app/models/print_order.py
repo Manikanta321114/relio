@@ -19,6 +19,8 @@ class PrintDeliveryDetails(BaseModel):
     address: str
     landmark: Optional[str] = None
     required_time: str # Today, Tomorrow, Specific Date (ISO string or text)
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 class PrintOrderModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -90,6 +92,8 @@ class PrintOrderResponse(BaseModel):
         address = raw_details.get("address") or raw_details.get("full_address") or ""
         landmark = raw_details.get("landmark")
         required_time = raw_details.get("required_time") or raw_details.get("required_delivery_time") or "Today"
+        latitude = raw_details.get("latitude")
+        longitude = raw_details.get("longitude")
         
         details = PrintDeliveryDetails(
             student_name=student_name,
@@ -98,7 +102,9 @@ class PrintOrderResponse(BaseModel):
             delivery_location=delivery_location,
             address=address,
             landmark=landmark,
-            required_time=required_time
+            required_time=required_time,
+            latitude=latitude,
+            longitude=longitude
         )
         
         # Print options mapping
