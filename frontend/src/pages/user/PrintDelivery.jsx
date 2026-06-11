@@ -110,12 +110,11 @@ export const PrintDelivery = () => {
   const uploadPdfFile = async (pdfFile) => {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "demo";
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "demo_preset";
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`;
 
     const formData = new FormData();
     formData.append("file", pdfFile);
     formData.append("upload_preset", uploadPreset);
-    formData.append("resource_type", "raw");
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -124,7 +123,9 @@ export const PrintDelivery = () => {
       const response = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
-          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
           setUploadProgress(percent);
         }
       });
@@ -134,9 +135,10 @@ export const PrintDelivery = () => {
         publicId: response.data.public_id
       };
     } catch (error) {
+      console.error("Cloudinary PDF upload failed:", error.response?.data || error);
       setIsUploading(false);
       const cloudError = error.response?.data?.error?.message || error.message || "Failed to upload to Cloudinary";
-      throw new Error(`Cloudinary Error: ${cloudError}`);
+      throw new Error(cloudError);
     }
   };
 
