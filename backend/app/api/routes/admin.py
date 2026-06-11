@@ -28,11 +28,15 @@ async def get_dashboard_stats(admin: UserModel = Depends(require_admin)):
     active_orders = await db.db.orders.count_documents({"status": {"$nin": ["delivered", "cancelled"]}})
     total_users = await db.db.users.count_documents({})
     
+    # Active print orders (excluding delivered and cancelled)
+    active_print_orders = await db.db.print_orders.count_documents({"status": {"$nin": ["Delivered", "Cancelled"]}})
+    
     return {
         "pendingBooks": pending_books,
         "approvedBooks": approved_books,
         "activeOrders": active_orders,
-        "totalUsers": total_users
+        "totalUsers": total_users,
+        "activePrintOrders": active_print_orders
     }
 
 @router.get("/books/pending", response_model=List[dict])

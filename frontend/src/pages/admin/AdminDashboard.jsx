@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { adminService } from "../../services/adminService";
-import { BookOpen, CheckCircle, Package, Users } from "lucide-react";
+import { BookOpen, CheckCircle, Package, Users, FileText } from "lucide-react";
 import { Card } from "../../components/ui/Card";
 
 export const AdminDashboard = () => {
@@ -9,7 +9,8 @@ export const AdminDashboard = () => {
     pendingBooks: 0,
     approvedBooks: 0,
     activeOrders: 0,
-    totalUsers: 0
+    totalUsers: 0,
+    activePrintOrders: 0
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,6 +34,7 @@ export const AdminDashboard = () => {
     { title: "Pending Approvals", value: stats.pendingBooks, icon: BookOpen, color: "text-amber-500", bg: "bg-amber-50" },
     { title: "Approved Books", value: stats.approvedBooks, icon: CheckCircle, color: "text-green-500", bg: "bg-green-50" },
     { title: "Active Orders", value: stats.activeOrders, icon: Package, color: "text-blue-500", bg: "bg-blue-50" },
+    { title: "Active Print Orders", value: stats.activePrintOrders || 0, icon: FileText, color: "text-indigo-500", bg: "bg-indigo-50" },
     { title: "Total Users", value: stats.totalUsers, icon: Users, color: "text-purple-500", bg: "bg-purple-50" }
   ];
 

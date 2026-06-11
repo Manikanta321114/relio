@@ -15,13 +15,17 @@ import {
   Calendar,
   MapPin,
   HelpCircle,
-  Search
+  Search,
+  FileText,
+  Printer,
+  ChevronRight
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { bookService } from "../../services/bookService";
 import { wishlistService } from "../../services/wishlistService";
 import { orderService } from "../../services/orderService";
 import { notificationService } from "../../services/notificationService";
+import { printOrderService } from "../../services/printOrderService";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -40,28 +44,32 @@ export const Dashboard = () => {
   const [ordersList, setOrdersList] = useState([]);
   const [wishlistList, setWishlistList] = useState([]);
   const [notificationsList, setNotificationsList] = useState([]);
+  const [printOrdersList, setPrintOrdersList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("uploads");
 
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      const [uploads, wishlist, orders, notifications] = await Promise.allSettled([
+      const [uploads, wishlist, orders, notifications, printOrders] = await Promise.allSettled([
         bookService.getMyUploads(),
         wishlistService.getWishlist(),
         orderService.getMyOrders(),
-        notificationService.getNotifications()
+        notificationService.getNotifications(),
+        printOrderService.getMyPrintOrders()
       ]);
 
       const uploadedBooks = uploads.status === "fulfilled" ? uploads.value : [];
       const wishlistBooks = wishlist.status === "fulfilled" ? wishlist.value : [];
       const myOrders = orders.status === "fulfilled" ? orders.value : [];
       const myNotifications = notifications.status === "fulfilled" ? notifications.value : [];
+      const myPrintOrders = printOrders.status === "fulfilled" ? printOrders.value : [];
 
       setUploadsList(uploadedBooks);
       setWishlistList(wishlistBooks);
       setOrdersList(myOrders);
       setNotificationsList(myNotifications);
+      setPrintOrdersList(myPrintOrders);
 
       // Compute book stats
       const totalUploaded = uploadedBooks.length;
@@ -220,6 +228,42 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      {/* Student Services Section */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span>Student Services</span>
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card: Xerox & Print Delivery (Beta) */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ y: -6, transition: { duration: 0.2 } }}
+            className="group relative overflow-hidden rounded-3xl bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/10 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-300 md:col-span-1"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-full pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-4xl">📄</span>
+                <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                  Beta
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Xerox & Print Delivery (Beta)</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">
+                Upload your notes, reports, and assignments. Get printed copies delivered easily.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/print-delivery")}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+            >
+              Try Print Service
+            </button>
+          </motion.div>
+        </div>
+      </div>
+
       {/* Compact Activity Overview */}
       <motion.div
         variants={itemVariants}
@@ -251,6 +295,17 @@ export const Dashboard = () => {
             >
               <ShoppingBag size={16} />
               Orders ({stats.ordersCount})
+            </button>
+            <button
+              onClick={() => setActiveTab("printOrders")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
+                activeTab === "printOrders"
+                  ? "bg-white dark:bg-gray-850 text-primary shadow-sm dark:text-white"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <FileText size={16} />
+              Print Orders ({printOrdersList.length})
             </button>
             <button
               onClick={() => setActiveTab("wishlist")}
@@ -372,6 +427,88 @@ export const Dashboard = () => {
                     <Link to="/my-orders" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 justify-end">
                       View all orders <ChevronRight size={16} />
                     </Link>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === "printOrders" && (
+              <motion.div
+                key="printOrders"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                {printOrdersList.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <p className="text-base font-medium">No print orders yet.</p>
+                    <Link to="/print-delivery" className="text-primary font-semibold hover:underline text-sm mt-1 inline-block">Order your first print now →</Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {printOrdersList.map((order) => (
+                      <div key={order.id || order._id} className="p-5 bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between gap-4">
+                        <div className="flex justify-between items-start min-w-0">
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-bold text-gray-900 dark:text-white text-sm">{order.order_id}</h4>
+                              <span className="text-xs text-gray-400 truncate max-w-[150px]">({order.pdf_name})</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                              <span>Pages: {order.pages}</span>
+                              <span>•</span>
+                              <span>Copies: {order.copies}</span>
+                              <span>•</span>
+                              <span className="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase">{order.print_type}</span>
+                              {order.binding !== "None" && (
+                                <>
+                                  <span>•</span>
+                                  <span className="bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase">{order.binding}</span>
+                                </>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-405 mt-1">Required: {order.delivery_details.required_time}</p>
+                            <p className="text-xs text-gray-405">Payment: {order.payment_method} ({order.payment_status})</p>
+                            {order.admin_notes && (
+                              <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 rounded-lg text-xs">
+                                <strong>Admin Note:</strong> {order.admin_notes}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-sm font-extrabold text-gray-900 dark:text-white">₹{order.total_price}</span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
+                              order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400" :
+                              order.status === "Cancelled" ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400" :
+                              order.status === "Pending" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400" :
+                              "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
+                            }`}>
+                              {order.status}
+                            </span>
+                          </div>
+                        </div>
+
+                        {order.status === "Pending" && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                if (window.confirm("Are you sure you want to cancel this print order?")) {
+                                  await printOrderService.cancelPrintOrder(order.id);
+                                  toast.success("Print order cancelled successfully!");
+                                  fetchDashboardData();
+                                }
+                              } catch (err) {
+                                toast.error("Failed to cancel print order");
+                              }
+                            }}
+                            className="w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1"
+                          >
+                            Cancel Order
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </motion.div>
