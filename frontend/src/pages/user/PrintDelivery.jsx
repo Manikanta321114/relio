@@ -183,14 +183,30 @@ export const PrintDelivery = () => {
         }
       };
 
+      console.log("Print order payload:", payload);
+
       const order = await printOrderService.createPrintOrder(payload);
       setCreatedOrder(order);
       setIsSuccess(true);
       toast.success("Print order placed successfully!");
     } catch (err) {
       toast.dismiss("upload-toast");
-      console.error(err);
-      const errorMsg = err.response?.data?.detail || err.message || "Failed to place print order";
+      console.error("Print order creation failed:", err);
+      
+      let errorMsg = "Failed to place print order";
+      if (err) {
+        // Handle FastAPI detail array or detail string
+        const detail = err.detail || err.response?.data?.detail;
+        if (detail) {
+          if (Array.isArray(detail)) {
+            errorMsg = detail.map(d => `${d.loc.slice(1).join('.')}: ${d.msg}`).join(', ');
+          } else {
+            errorMsg = detail;
+          }
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+      }
       toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
