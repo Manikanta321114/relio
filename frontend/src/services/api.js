@@ -38,6 +38,7 @@ api.interceptors.response.use(
     // Handle Authentication Errors
     if (error.response.status === 401) {
       localStorage.removeItem("token");
+      window.dispatchEvent(new Event("unauthorized"));
       // Don't toast on initial load check, only on active requests
       if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
         toast.error("Session expired. Please log in again.");

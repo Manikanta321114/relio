@@ -69,8 +69,13 @@ export const PrintDelivery = () => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
-    if (selectedFile.type !== "application/pdf") {
+    if (selectedFile.type !== "application/pdf" && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
       toast.error("Only PDF documents are supported");
+      return;
+    }
+
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      toast.error("PDF file size must be less than 10MB");
       return;
     }
 

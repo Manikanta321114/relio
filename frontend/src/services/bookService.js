@@ -18,5 +18,15 @@ export const bookService = {
   getMyUploads: async () => {
     const response = await api.get("/books/my-uploads");
     return response.data;
+  },
+
+  updateBook: async (bookId, bookData) => {
+    const response = await api.put(`/books/${bookId}`, bookData);
+    return response.data;
+  },
+
+  deleteBook: async (bookId) => {
+    const response = await api.delete(`/books/${bookId}`);
+    return response.data;
   }
 };

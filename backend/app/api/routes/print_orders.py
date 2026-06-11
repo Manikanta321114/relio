@@ -8,6 +8,21 @@ from pydantic import BaseModel
 from typing import Optional, List
 from bson import ObjectId
 from datetime import datetime, timezone
+import time
+
+RATE_LIMIT_COOLDOWNS = {}
+
+def check_rate_limit(user_id: str, action: str, cooldown_seconds: float = 2.0):
+    now = time.time()
+    key = (str(user_id), action)
+    if key in RATE_LIMIT_COOLDOWNS:
+        elapsed = now - RATE_LIMIT_COOLDOWNS[key]
+        if elapsed < cooldown_seconds:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Please wait a moment before trying to {action.replace('_', ' ')} again."
+            )
+    RATE_LIMIT_COOLDOWNS[key] = now
 
 router = APIRouter()
 
@@ -25,6 +40,7 @@ def require_admin(current_user: UserModel = Depends(get_current_user)):
 
 @router.post("/", response_model=PrintOrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_print_order(order_data: PrintOrderCreate, current_user: UserModel = Depends(get_current_user)):
+    check_rate_limit(current_user.id, "place_print_order")
     try:
         # Validate calculations on the backend
         per_page_rate = 2.0 if order_data.print_type == "B/W" else 10.0

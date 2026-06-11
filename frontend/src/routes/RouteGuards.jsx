@@ -34,7 +34,11 @@ export const AdminRoute = () => {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 

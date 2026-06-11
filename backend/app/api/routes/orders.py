@@ -5,11 +5,28 @@ from app.models.user import UserModel
 from app.models.order import OrderCreate, OrderModel, OrderResponse
 from app.models.notification import NotificationModel
 from bson import ObjectId
+import time
+
+RATE_LIMIT_COOLDOWNS = {}
+
+def check_rate_limit(user_id: str, action: str, cooldown_seconds: float = 2.0):
+    now = time.time()
+    key = (str(user_id), action)
+    if key in RATE_LIMIT_COOLDOWNS:
+        elapsed = now - RATE_LIMIT_COOLDOWNS[key]
+        if elapsed < cooldown_seconds:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Please wait a moment before trying to {action.replace('_', ' ')} again."
+            )
+    RATE_LIMIT_COOLDOWNS[key] = now
 
 router = APIRouter()
 
 @router.post("/checkout", response_model=OrderResponse)
 async def checkout_order(order_data: OrderCreate, current_user: UserModel = Depends(get_current_user)):
+    check_rate_limit(current_user.id, "checkout_order")
+    
     # Verify book exists and is approved
     book = await db.db.books.find_one({"_id": ObjectId(order_data.book_id), "status": "approved"})
     if not book:
@@ -23,7 +40,15 @@ async def checkout_order(order_data: OrderCreate, current_user: UserModel = Depe
     delivery_charge = 40.0
     discount = 0.0
     total_amount = price + delivery_charge - discount
-    
+
+    # Atomically lock purchase to prevent duplicate orders
+    result_update = await db.db.books.update_one(
+        {"_id": ObjectId(order_data.book_id), "status": "approved"},
+        {"$set": {"status": "sold"}}
+    )
+    if result_update.modified_count == 0:
+        raise HTTPException(status_code=400, detail="This book is already sold")
+        
     # Create order
     new_order = OrderModel(
         buyer_id=str(current_user.id),
@@ -43,12 +68,6 @@ async def checkout_order(order_data: OrderCreate, current_user: UserModel = Depe
     
     result = await db.db.orders.insert_one(new_order.model_dump(by_alias=True, exclude_none=True))
     created_order = await db.db.orders.find_one({"_id": result.inserted_id})
-    
-    # Mark book as sold
-    await db.db.books.update_one(
-        {"_id": ObjectId(order_data.book_id)},
-        {"$set": {"status": "sold"}}
-    )
     
     # Notify Buyer
     buyer_notif = NotificationModel(

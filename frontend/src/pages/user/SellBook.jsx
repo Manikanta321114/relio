@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadZone } from "../../components/upload/UploadZone";
 import { StepIndicator } from "../../components/forms/StepIndicator";
@@ -12,8 +12,9 @@ import { Card } from "../../components/ui/Card";
 import toast from "react-hot-toast";
 import { uploadImageToCloudinary } from "../../services/cloudinary";
 import { bookService } from "../../services/bookService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getCurrentLocation } from "../../utils/location";
+import { marketplaceService } from "../../services/marketplaceService";
 
 const STEPS = ["Images", "Details", "Location", "Preview"];
 const CATEGORIES = {
@@ -65,6 +66,9 @@ export const SellBook = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
 
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get("edit");
+
   const [formData, setFormData] = useState({
     images: { front: null, back: null },
     title: "",
@@ -77,6 +81,37 @@ export const SellBook = () => {
     description: "",
     address: { state: "", city: "", area: "", pincode: "" }
   });
+
+  useEffect(() => {
+    if (editId) {
+      const loadBook = async () => {
+        try {
+          const data = await marketplaceService.getBookById(editId);
+          setFormData({
+            images: { front: data.front_image, back: data.back_image },
+            title: data.title,
+            category: data.category,
+            subcategory: data.subcategory || "",
+            originalPrice: String(data.original_price || ""),
+            price: String(data.price),
+            yearOfPublication: String(data.year_of_publication || ""),
+            condition: data.condition,
+            description: data.description,
+            address: {
+              state: data.location?.state || "",
+              city: data.location?.city || "",
+              area: data.location?.area || "",
+              pincode: data.location?.pincode || ""
+            }
+          });
+        } catch (e) {
+          toast.error("Failed to load book data for editing");
+          navigate("/my-uploads");
+        }
+      };
+      loadBook();
+    }
+  }, [editId]);
 
   const handleUseCurrentLocation = async () => {
     setIsDetecting(true);
@@ -104,6 +139,16 @@ export const SellBook = () => {
   };
 
   const handleFileSelect = (file, type) => {
+    if (!file) return;
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      toast.error("Only JPG, PNG, and WEBP images are supported");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
     setFormData(prev => ({
       ...prev,
       images: { ...prev.images, [type]: file }
@@ -166,17 +211,22 @@ export const SellBook = () => {
       setIsSubmitting(true);
       
       // 1. Upload Front Image
-      setUploadStatus("Uploading front cover...");
-      setUploadProgress(10);
-      const frontUpload = await uploadImageToCloudinary(formData.images.front, (prog) => {
-        setUploadProgress(10 + (prog * 0.4)); // First 40% of progress
-      });
-      
-      if (!frontUpload.success) throw new Error("Failed to upload front image");
+      let frontUrl = formData.images.front;
+      if (formData.images.front instanceof File) {
+        setUploadStatus("Uploading front cover...");
+        setUploadProgress(10);
+        const frontUpload = await uploadImageToCloudinary(formData.images.front, (prog) => {
+          setUploadProgress(10 + (prog * 0.4)); // First 40% of progress
+        });
+        if (!frontUpload.success) throw new Error("Failed to upload front image");
+        frontUrl = frontUpload.url;
+      } else if (typeof frontUrl !== "string") {
+        throw new Error("Front image is required");
+      }
 
       // 2. Upload Back Image (if exists)
-      let backUrl = null;
-      if (formData.images.back) {
+      let backUrl = formData.images.back;
+      if (formData.images.back instanceof File) {
         setUploadStatus("Uploading back cover...");
         const backUpload = await uploadImageToCloudinary(formData.images.back, (prog) => {
           setUploadProgress(50 + (prog * 0.4)); // Next 40% of progress
@@ -198,12 +248,16 @@ export const SellBook = () => {
         year_of_publication: formData.yearOfPublication ? Number(formData.yearOfPublication) : null,
         condition: formData.condition,
         description: formData.description,
-        front_image: frontUpload.url,
+        front_image: frontUrl,
         back_image: backUrl,
         location: formData.address
       };
 
-      await bookService.createBook(payload);
+      if (editId) {
+        await bookService.updateBook(editId, payload);
+      } else {
+        await bookService.createBook(payload);
+      }
       
       setUploadProgress(100);
       setUploadStatus("Done!");
@@ -367,8 +421,11 @@ export const SellBook = () => {
     return (
       <div className="py-10 flex justify-center">
         <SuccessState 
-          title="Book Submitted Successfully!" 
-          message="Your book has been submitted for admin approval 🚀. We will notify you once it's live."
+          title={editId ? "Book Listing Updated!" : "Book Submitted Successfully!"} 
+          message={editId 
+            ? "Your listing has been updated and submitted for admin moderation re-approval 🚀."
+            : "Your book has been submitted for admin approval 🚀. We will notify you once it's live."
+          }
         />
       </div>
     );

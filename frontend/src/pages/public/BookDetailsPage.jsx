@@ -10,6 +10,8 @@ import { orderService } from "../../services/orderService";
 import { useWishlist } from "../../context/WishlistContext";
 import { wishlistService } from "../../services/wishlistService";
 
+const fallbackBookImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E";
+
 export const BookDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -154,9 +156,14 @@ export const BookDetailsPage = () => {
             className="w-full h-[400px] md:h-[500px] bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 shadow-sm relative group cursor-zoom-in"
           >
             {activeImage ? (
-              <img src={activeImage} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img 
+                src={activeImage} 
+                alt={book.title} 
+                onError={(e) => { e.target.src = fallbackBookImage; }}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+              />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>
+              <img src={fallbackBookImage} className="w-16 h-16 object-contain opacity-55" alt="" />
             )}
             
             {/* Zoom Icon Overlay on Hover */}
@@ -180,7 +187,12 @@ export const BookDetailsPage = () => {
                 activeImage === book.front_image ? "border-primary scale-102" : "border-gray-200 opacity-60 hover:opacity-100"
               }`}
             >
-              <img src={book.front_image} className="w-full h-full object-cover" alt="Front Cover Thumbnail" />
+              <img 
+                src={book.front_image} 
+                className="w-full h-full object-cover" 
+                onError={(e) => { e.target.src = fallbackBookImage; }}
+                alt="Front Cover Thumbnail" 
+              />
             </button>
             
             {book.back_image && (
@@ -190,7 +202,12 @@ export const BookDetailsPage = () => {
                   activeImage === book.back_image ? "border-primary scale-102" : "border-gray-200 opacity-60 hover:opacity-100"
                 }`}
               >
-                <img src={book.back_image} className="w-full h-full object-cover" alt="Back Cover Thumbnail" />
+                <img 
+                  src={book.back_image} 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => { e.target.src = fallbackBookImage; }}
+                  alt="Back Cover Thumbnail" 
+                />
               </button>
             )}
           </div>
@@ -268,19 +285,24 @@ export const BookDetailsPage = () => {
             </p>
           </div>
 
-          <div className="flex gap-4 mt-auto">
-            <Button 
-              variant="primary" 
-              className={`flex-1 py-4 text-lg font-bold ${book.status === 'sold' ? 'opacity-50 cursor-not-allowed bg-gray-400 border-gray-400 hover:bg-gray-400' : 'shadow-xl shadow-primary/20'}`} 
-              onClick={handleBuyClick}
-              disabled={book.status === 'sold'}
-            >
-              {book.status === 'sold' ? 'Out of Stock' : 'Buy Now'}
-            </Button>
-            <Button variant="outline" className="flex-1 py-4 text-lg font-bold bg-white" onClick={handleRent}>
-              Rent Book
-            </Button>
-          </div>
+          {book.status === 'sold' ? (
+            <div className="w-full mt-auto py-4 text-center text-xl font-extrabold text-white bg-red-650 rounded-2xl tracking-wider select-none shadow-md border border-red-600">
+              SOLD
+            </div>
+          ) : (
+            <div className="flex gap-4 mt-auto">
+              <Button 
+                variant="primary" 
+                className="flex-1 py-4 text-lg font-bold shadow-xl shadow-primary/20" 
+                onClick={handleBuyClick}
+              >
+                Buy Now
+              </Button>
+              <Button variant="outline" className="flex-1 py-4 text-lg font-bold bg-white" onClick={handleRent}>
+                Rent Book
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

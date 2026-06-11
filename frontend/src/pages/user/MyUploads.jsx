@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { bookService } from "../../services/bookService";
 import { ListingCard } from "../../components/dashboard/ListingCard";
 import { EmptyUploadsState } from "../../components/dashboard/EmptyUploadsState";
@@ -7,6 +8,7 @@ import toast from "react-hot-toast";
 import clsx from "clsx";
 
 export const MyUploads = () => {
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, pending, approved, rejected, sold
@@ -25,6 +27,20 @@ export const MyUploads = () => {
       toast.error("Failed to load your uploads");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (book) => {
+    navigate(`/sell-book?edit=${book.id || book._id}`);
+  };
+
+  const handleDelete = async (bookId) => {
+    try {
+      await bookService.deleteBook(bookId);
+      toast.success("Listing deleted successfully!");
+      fetchBooks();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete book");
     }
   };
 
@@ -95,7 +111,7 @@ export const MyUploads = () => {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <ListingCard book={book} />
+                    <ListingCard book={book} onEdit={handleEdit} onDelete={handleDelete} />
                   </motion.div>
                 ))
               ) : (
