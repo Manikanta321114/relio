@@ -110,11 +110,12 @@ export const PrintDelivery = () => {
   const uploadPdfFile = async (pdfFile) => {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "demo";
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "demo_preset";
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`;
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
 
     const formData = new FormData();
     formData.append("file", pdfFile);
     formData.append("upload_preset", uploadPreset);
+    formData.append("resource_type", "raw");
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -133,14 +134,9 @@ export const PrintDelivery = () => {
         publicId: response.data.public_id
       };
     } catch (error) {
-      console.error("Cloudinary upload error:", error);
       setIsUploading(false);
-      // Local fallback for local dev if keys are not set up
-      const mockPublicId = `mock_pdf_${Date.now()}`;
-      return {
-        url: `https://res.cloudinary.com/demo/raw/upload/v12345/${mockPublicId}.pdf`,
-        publicId: mockPublicId
-      };
+      const cloudError = error.response?.data?.error?.message || error.message || "Failed to upload to Cloudinary";
+      throw new Error(`Cloudinary Error: ${cloudError}`);
     }
   };
 
@@ -190,8 +186,10 @@ export const PrintDelivery = () => {
       setIsSuccess(true);
       toast.success("Print order placed successfully!");
     } catch (err) {
+      toast.dismiss("upload-toast");
       console.error(err);
-      toast.error("Failed to place print order");
+      const errorMsg = err.response?.data?.detail || err.message || "Failed to place print order";
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
