@@ -120,9 +120,13 @@ export const CheckoutPage = () => {
     try {
       const response = await orderService.createCheckoutOrder(book.id, address, paymentMethod);
       toast.success("Order placed successfully");
-      navigate("/my-orders");
+      setOrderId(response?.order_id || response?.id || "N/A");
+      setStep(4);
+      window.scrollTo(0, 0);
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to place order");
+      console.error(error);
+      const errMsg = error?.detail || error?.response?.data?.detail || "Failed to place order";
+      toast.error(errMsg);
     } finally {
       setIsProcessing(false);
     }

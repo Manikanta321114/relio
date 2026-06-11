@@ -135,6 +135,17 @@ export const Dashboard = () => {
     show: { opacity: 1, y: 0 }
   };
 
+  const floatVariants = {
+    animate: {
+      y: [0, -10, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
     <motion.div 
       initial="hidden" 
@@ -145,18 +156,39 @@ export const Dashboard = () => {
       {/* Top Welcome Card */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-emerald-800 to-indigo-900 text-white p-8 md:p-10 shadow-xl border border-white/10"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-emerald-950 text-white p-8 md:p-10 shadow-xl border border-white/10"
       >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-        <div className="absolute -bottom-10 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/15 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+        <div className="absolute -bottom-10 left-10 w-64 h-64 bg-primary/25 rounded-full blur-3xl pointer-events-none" />
         
+        {/* Floating Icons */}
+        <motion.div
+          variants={floatVariants}
+          animate="animate"
+          className="absolute right-16 bottom-4 text-white/5 text-9xl pointer-events-none hidden md:block select-none"
+        >
+          🎓
+        </motion.div>
+        <motion.div
+          variants={{
+            animate: {
+              y: [0, 8, 0],
+              transition: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+            }
+          }}
+          animate="animate"
+          className="absolute left-1/3 top-6 text-white/5 text-7xl pointer-events-none hidden md:block select-none"
+        >
+          📚
+        </motion.div>
+
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight flex items-center gap-3">
               Welcome back, {user?.name || "Student"} 👋
             </h1>
-            <p className="text-lg md:text-xl text-white/80 font-medium">
-              Your student book marketplace
+            <p className="text-base md:text-lg text-white/80 font-medium max-w-lg leading-relaxed">
+              Buy, sell, and manage your student essentials in one place
             </p>
           </div>
           <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 self-start md:self-auto shadow-inner">
@@ -173,61 +205,138 @@ export const Dashboard = () => {
 
       {/* Main Services / Features Section */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <span>Main Services</span>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span>Campus Essentials Services</span>
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Card 1: Sell Books */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            className="group relative overflow-hidden rounded-3xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-300"
+            whileHover={{ y: -8, scale: 1.01, transition: { duration: 0.2 } }}
+            className="group relative overflow-hidden rounded-3xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-emerald-500/20 dark:hover:border-emerald-500/20 transition-all duration-300"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
             <div>
               <div className="flex items-center justify-between mb-6">
-                <span className="text-4xl">📚</span>
-                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full uppercase tracking-wider">Marketplace</span>
+                <div className="h-14 w-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center text-emerald-600 text-3xl shrink-0 group-hover:scale-110 transition-transform">📚</div>
+                <div className="flex flex-col gap-1.5 items-end">
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full uppercase tracking-wider">💰 Save money</span>
+                  <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-full uppercase tracking-wider">🎓 Student verified</span>
+                </div>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Sell Your Books</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Turn your old books into money</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium text-sm leading-relaxed">Turn your old books into money. List items securely and trade directly on campus.</p>
             </div>
-            <button
+            <Button
               onClick={() => navigate("/sell-book")}
-              className="w-full bg-primary hover:bg-primary/95 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
+              className="w-full bg-primary hover:bg-primary/95 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg active:scale-95"
             >
               <PlusCircle size={18} />
               List Book
-            </button>
+            </Button>
           </motion.div>
 
           {/* Card 2: Xerox & Print Delivery (Beta) */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ y: -6, transition: { duration: 0.2 } }}
+            whileHover={{ y: -8, scale: 1.01, transition: { duration: 0.2 } }}
             className="group relative overflow-hidden rounded-3xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-8 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-indigo-500/20 dark:hover:border-indigo-500/20 transition-all duration-300"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-full pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
             <div>
               <div className="flex items-center justify-between mb-6">
-                <span className="text-4xl">📄</span>
-                <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full uppercase tracking-wider">Beta</span>
+                <div className="h-14 w-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl shrink-0 group-hover:scale-110 transition-transform">📄</div>
+                <div className="flex flex-col gap-1.5 items-end">
+                  <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-full uppercase tracking-wider">⚡ Fast</span>
+                  <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2.5 py-1 rounded-full uppercase tracking-wider">📍 Campus delivery</span>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Xerox & Print Delivery (Beta)</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium">Upload your notes, reports, and assignments. Get printed copies delivered easily.</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Xerox & Print Delivery <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-full ml-1">BETA</span></h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium text-sm leading-relaxed">Upload PDF. Relax. Get delivery. Upload notes, lab manuals, and reports for on-campus delivery.</p>
             </div>
-            <button
+            <Button
               onClick={() => navigate("/print-delivery")}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md group-hover:shadow-lg active:scale-95"
             >
               Try Print Service
-            </button>
+            </Button>
           </motion.div>
         </div>
       </div>
 
-      {/* Compact Activity Overview */}
+      {/* Quick Stats Section */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stat 1: My Listings */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setActiveTab("uploads")}
+          className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
+        >
+          <div className="space-y-1">
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.totalUploaded}</span>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">My Listings</p>
+          </div>
+          <div className="h-10 w-10 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <BookOpen size={20} />
+          </div>
+        </motion.div>
+
+        {/* Stat 2: My Orders */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setActiveTab("orders")}
+          className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
+        >
+          <div className="space-y-1">
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.ordersCount}</span>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">My Orders</p>
+          </div>
+          <div className="h-10 w-10 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <ShoppingBag size={20} />
+          </div>
+        </motion.div>
+
+        {/* Stat 3: Wishlist */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setActiveTab("wishlist")}
+          className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
+        >
+          <div className="space-y-1">
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.wishlistCount}</span>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wishlist</p>
+          </div>
+          <div className="h-10 w-10 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Heart size={20} className="fill-red-500/10 text-red-500" />
+          </div>
+        </motion.div>
+
+        {/* Stat 4: Notifications */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setActiveTab("notifications")}
+          className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-800 p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-all flex items-center justify-between group"
+        >
+          <div className="space-y-1">
+            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{notificationsList.length}</span>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifications</p>
+          </div>
+          <div className="h-10 w-10 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Bell size={20} />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Activity Overview */}
       <motion.div
         variants={itemVariants}
         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-100 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-lg"
@@ -307,9 +416,13 @@ export const Dashboard = () => {
                 className="space-y-4"
               >
                 {uploadsList.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-base font-medium">No uploads yet.</p>
-                    <Link to="/sell-book" className="text-primary font-semibold hover:underline text-sm mt-1 inline-block">List your first book now →</Link>
+                  <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
+                    <span className="text-4xl mb-3 select-none">📚</span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">No uploads yet</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Clean out your desk and list your pre-loved textbooks or notes for other students.</p>
+                    <Link to="/sell-book" className="mt-4 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-primary/95 transition-all active:scale-95">
+                      List your first book
+                    </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -358,9 +471,13 @@ export const Dashboard = () => {
                 className="space-y-4"
               >
                 {ordersList.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-base font-medium">No orders yet.</p>
-                    <Link to="/" className="text-primary font-semibold hover:underline text-sm mt-1 inline-block">Browse books on marketplace →</Link>
+                  <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
+                    <span className="text-4xl mb-3 select-none">📦</span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">No orders yet</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Your orders and purchases activity will appear here once placed.</p>
+                    <Link to="/" className="mt-4 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-primary/95 transition-all active:scale-95">
+                      Browse Books
+                    </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -404,9 +521,13 @@ export const Dashboard = () => {
                 className="space-y-4"
               >
                 {printOrdersList.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-base font-medium">No print orders yet.</p>
-                    <Link to="/print-delivery" className="text-primary font-semibold hover:underline text-sm mt-1 inline-block">Order your first print now →</Link>
+                  <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
+                    <span className="text-4xl mb-3 select-none">📄</span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">No print orders yet</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Need assignments, lab reports, or notes printed and delivered? Try Xerox Print service.</p>
+                    <Link to="/print-delivery" className="mt-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-indigo-750 transition-all active:scale-95">
+                      Order a Print
+                    </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -486,9 +607,13 @@ export const Dashboard = () => {
                 className="space-y-4"
               >
                 {wishlistList.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-base font-medium">Your wishlist is empty.</p>
-                    <Link to="/" className="text-primary font-semibold hover:underline text-sm mt-1 inline-block">Add books to wishlist →</Link>
+                  <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
+                    <span className="text-4xl mb-3 select-none">❤️</span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">Your wishlist is empty</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">Tap the heart on any book to save it to your wishlist here.</p>
+                    <Link to="/" className="mt-4 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-primary/95 transition-all active:scale-95">
+                      Browse Marketplace
+                    </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -548,8 +673,10 @@ export const Dashboard = () => {
                 className="space-y-4"
               >
                 {notificationsList.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-base font-medium">No notifications yet.</p>
+                  <div className="text-center py-12 bg-gray-50/50 dark:bg-gray-950/10 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 flex flex-col items-center">
+                    <span className="text-4xl mb-3 select-none">🔔</span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">All caught up!</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">You don't have any notifications or activity updates at the moment.</p>
                   </div>
                 ) : (
                   <div className="flow-root">
